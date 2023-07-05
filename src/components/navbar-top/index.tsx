@@ -57,7 +57,7 @@ const NavbarTop: React.FC = () => {
     >
       <Box>
         <a href="https://devbox.eng.br">
-          <img src={IMAGES.LogoBlack500} width="200px" />
+          <img src={IMAGES.LogoBlack500} width="125px" />
         </a>
       </Box>
       {!isMobile && <Menu />}

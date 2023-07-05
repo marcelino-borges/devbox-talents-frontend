@@ -24,7 +24,7 @@ const Login: React.FC = () => {
       password,
       (user: User) => {
         setIsLoading(false);
-        navigate(`/account/${user.uid}`);
+        navigate(`/profile/${user.uid}`);
       },
       (error: any) => {
         setIsLoading(false);
