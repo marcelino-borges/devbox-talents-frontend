@@ -14,7 +14,6 @@ const Login: React.FC = () => {
 
   const login = (event: any) => {
     event.preventDefault();
-    console.log("asdasd");
 
     if (isLoading) return;
 
@@ -31,7 +30,7 @@ const Login: React.FC = () => {
         setIsLoading(false);
         const translatedError = translateFirebaseError(error.message);
         setError(translatedError);
-        console.log("Erro ao entrar: ", translatedError);
+        console.error("Erro ao entrar: ", translatedError);
       }
     );
   };

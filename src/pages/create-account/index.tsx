@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Autocomplete,
   Box,
@@ -25,7 +25,6 @@ import {
   AddCircleOutline as AddCircleOutlineIcon,
   VisibilityOff,
   Visibility,
-  Delete,
 } from "@mui/icons-material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import {
@@ -49,11 +48,7 @@ import {
 } from "../../types";
 import { PRIMARY_COLOR } from "../../constants/colors";
 import { format, isValid } from "date-fns";
-import {
-  joinSkills,
-  translateEmploymentType,
-  translateLocationType,
-} from "../../utils";
+import { translateEmploymentType, translateLocationType } from "../../utils";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { createTalent, getTalent, updateTalent } from "../../services/talents";
 import { AxiosResponse } from "axios";
@@ -212,7 +207,7 @@ const Account: React.FC = () => {
           })
           .catch((error: any) => {
             const message = error.response.data.message;
-            console.log(message);
+            console.error(message);
             setSubmitError(message);
             deleteAccount();
           });
@@ -220,7 +215,7 @@ const Account: React.FC = () => {
       (error: any) => {
         setIsLoading(false);
         const translatedError = translateFirebaseError(error.message);
-        console.log(translatedError);
+        console.error(translatedError);
         setSubmitError(translatedError);
       }
     );
@@ -258,7 +253,7 @@ const Account: React.FC = () => {
       .catch((error: any) => {
         setIsLoading(false);
         const translatedError = translateFirebaseError(error.message);
-        console.log(translatedError);
+        console.error(translatedError);
         setSubmitError(translatedError);
       });
   };
@@ -422,7 +417,6 @@ const Account: React.FC = () => {
           updated.end = undefined;
         }
 
-        console.log("educationToAdd: ", updated);
         setAddedEducations([...addedEducations, updated]);
         onClose();
       }

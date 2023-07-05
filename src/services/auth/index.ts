@@ -23,7 +23,7 @@ export const createAccount = async (
       if (onSuccess) onSuccess(user);
     })
     .catch((error: any) => {
-      console.log(
+      console.error(
         `[${error.code}] Erro durante criação da conta: `,
         error.message
       );
@@ -45,7 +45,7 @@ export const signIn = async (
       if (onSuccess) onSuccess(user);
     })
     .catch((error) => {
-      console.log(`[${error.code}] Erro durante login: `, error.message);
+      console.error(`[${error.code}] Erro durante login: `, error.message);
       if (onError) onError(error);
     });
 };
@@ -59,7 +59,7 @@ export const logout = async (): Promise<boolean> => {
       return true;
     })
     .catch((error) => {
-      console.log("Erro durante logout: ", error.message);
+      console.error("Erro durante logout: ", error.message);
       return false;
     });
 };

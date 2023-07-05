@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Stack } from "@mui/material";
+import { Box, CircularProgress, Stack } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getTalent } from "../../services/talents";
@@ -18,7 +18,6 @@ interface DataRowProps {
 const Profile: React.FC = () => {
   const { authId } = useParams();
   const [profile, setProfile] = useState<Talent>();
-  const [error, setError] = useState("");
 
   useEffect(() => {
     if (authId) {
@@ -30,12 +29,12 @@ const Profile: React.FC = () => {
           if (talent) {
             setProfile(talent);
           } else {
-            setError("Perfil não localizado.");
+            console.error("Erro: Não conseguimos buscar o talento");
           }
         })
         .catch((error: any) => {
           const message = error.response.data.message;
-          setError(message);
+          console.error("Erro: ", message);
         });
     }
   }, [authId]);
