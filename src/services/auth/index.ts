@@ -6,6 +6,8 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
+import { clearStorage } from "../../utils/storage";
+import { TOKEN_STORAGE_KEY, USER_STORAGE_KEY } from "../../constants";
 
 export const createAccount = async (
   email: string,
@@ -51,7 +53,11 @@ export const signIn = async (
 export const logout = async (): Promise<boolean> => {
   const auth = getAuth();
   return signOut(auth)
-    .then(() => true)
+    .then(() => {
+      clearStorage(USER_STORAGE_KEY);
+      clearStorage(TOKEN_STORAGE_KEY);
+      return true;
+    })
     .catch((error) => {
       console.log("Erro durante logout: ", error.message);
       return false;

@@ -438,4 +438,5 @@ export const OTHER_SKILLS = [
 ];
 
 export const EMAIL_VALIDATOR = /^.+@.+\..+$/gi;
-export const PASSWORD_VALIDATOR = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+export const PASSWORD_VALIDATOR =
+  /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d[\]!@#$%&*()_+={};:'",.<>?/|\\-]{6,}$/;

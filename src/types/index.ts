@@ -3,6 +3,7 @@ export interface Talent {
   firstName: string;
   lastName: string;
   email: string;
+  authId: string;
   languages?: Skill[];
   frameworks?: Skill[];
   databases?: Skill[];

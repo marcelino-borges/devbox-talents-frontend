@@ -25,6 +25,7 @@ import {
   AddCircleOutline as AddCircleOutlineIcon,
   VisibilityOff,
   Visibility,
+  Delete,
 } from "@mui/icons-material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import {
@@ -47,8 +48,12 @@ import {
   Talent,
 } from "../../types";
 import { PRIMARY_COLOR } from "../../constants/colors";
-import { format } from "date-fns";
-import { translateEmploymentType, translateLocationType } from "../../utils";
+import { format, isValid } from "date-fns";
+import {
+  joinSkills,
+  translateEmploymentType,
+  translateLocationType,
+} from "../../utils";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { createTalent, getTalent, updateTalent } from "../../services/talents";
 import { AxiosResponse } from "axios";
@@ -56,6 +61,8 @@ import { createAccount, deleteAccount } from "../../services/auth";
 import { User } from "firebase/auth";
 import { getStorage, setSessionStorage } from "../../utils/storage";
 import { translateFirebaseError } from "../../utils/firebase";
+import JobCard from "../../components/job-card";
+import EducationCard from "../../components/education-card";
 
 const EMPTY_EDUCATION: Education = {
   institution: "",
@@ -88,12 +95,14 @@ interface PersonalData {
   firstName: string;
   lastName: string;
   email: string;
+  authId: string;
 }
 
 const EMPTY_PERSONAL_DATA: PersonalData = {
   firstName: "",
   lastName: "",
   email: "",
+  authId: "",
 };
 
 const Account: React.FC = () => {
@@ -179,6 +188,7 @@ const Account: React.FC = () => {
         setSessionStorage(USER_STORAGE_KEY, JSON.stringify(user));
 
         const newTalent: Talent = {
+          authId: user.uid,
           firstName: personalData.firstName,
           lastName: personalData.lastName,
           email: personalData.email,
@@ -198,12 +208,12 @@ const Account: React.FC = () => {
 
         createTalent(newTalent)
           .then(() => {
-            navigate("/profile");
+            navigate(`/profile/${user.uid}`);
           })
           .catch((error: any) => {
-            const translatedError = translateFirebaseError(error.message);
-            console.log(translatedError);
-            setSubmitError(translatedError);
+            const message = error.response.data.message;
+            console.log(message);
+            setSubmitError(message);
             deleteAccount();
           });
       },
@@ -222,6 +232,7 @@ const Account: React.FC = () => {
     setIsLoading(true);
 
     const talent: Talent = {
+      authId: personalData.authId,
       firstName: personalData.firstName,
       lastName: personalData.lastName,
       email: personalData.email,
@@ -242,7 +253,7 @@ const Account: React.FC = () => {
     updateTalent(talent)
       .then(() => {
         setIsLoading(false);
-        navigate("/profile");
+        navigate(`/profile/${personalData.authId}`);
       })
       .catch((error: any) => {
         setIsLoading(false);
@@ -270,6 +281,7 @@ const Account: React.FC = () => {
             firstName: talent.firstName,
             lastName: talent.lastName,
             email: talent.email,
+            authId: talent.authId,
           };
           setPersonalData(personalData);
         }
@@ -335,103 +347,28 @@ const Account: React.FC = () => {
     );
   };
 
-  const EducationFields = useCallback(
-    ({ education }: { education: Education }) => {
-      return (
-        <Stack
-          direction="column"
-          gap="4px"
-          p="8px"
-          style={{
-            borderRadius: "5px",
-            backgroundColor: "#00000004",
-            border: "2px dashed #00000009",
-            fontSize: "0.7rem",
-            width: "100%",
-          }}
-        >
-          <Box>
-            <strong>Instituição:</strong> {education.institution}
-          </Box>
-          <Box>
-            <strong>Curso:</strong> {education.course}
-          </Box>
-          <Box>
-            <strong>Início:</strong>{" "}
-            {format(
-              education.start ? new Date(education.start) : new Date(),
-              "dd/MM/yyyy"
-            )}
-          </Box>
-          {education?.end && (
-            <Box>
-              <strong>Término:</strong>{" "}
-              {format(
-                education.end ? new Date(education.end) : new Date(),
-                "dd/MM/yyyy"
-              )}
-            </Box>
-          )}
-        </Stack>
-      );
-    },
-    []
-  );
-
-  const JobFields = useCallback(({ job }: { job: Job }) => {
-    return (
-      <Stack
-        direction="column"
-        gap="4px"
-        p="8px"
-        style={{
-          borderRadius: "5px",
-          backgroundColor: "#00000004",
-          border: "2px dashed #00000009",
-          fontSize: "0.7rem",
-          width: "100%",
-        }}
-      >
-        <Box>
-          <strong>Empresa:</strong> {job.companyName}
-        </Box>
-        <Box>
-          <strong>Cargo:</strong> {job.roleName}
-        </Box>
-        <Box>
-          <strong>Tipo de emprego:</strong>{" "}
-          {translateEmploymentType(job.employmentType)}
-        </Box>
-        <Box>
-          <strong>Localização:</strong> {job.location}
-        </Box>
-        <Box>
-          <strong>Tipo da localização:</strong>{" "}
-          {translateLocationType(job.locationType)}
-        </Box>
-        <Box>
-          <strong>Ainda trabalho aqui:</strong>{" "}
-          {job.currentEmployment ? "Sim" : "Não"}
-        </Box>
-        <Box>
-          <strong>Início:</strong>{" "}
-          {format(
-            job.startDate ? new Date(job.startDate) : new Date(),
-            "dd/MM/yyyy"
-          )}
-        </Box>
-        {!job.currentEmployment && job.endDate && (
-          <Box>
-            <strong>Saída:</strong>{" "}
-            {format(
-              job.endDate ? new Date(job.endDate) : new Date(),
-              "dd/MM/yyyy"
-            )}
-          </Box>
-        )}
-      </Stack>
+  const deleteEducation = (education: Education) => {
+    const filteredEducations = addedEducations.filter(
+      (existingEducation: Education) =>
+        education.course !== existingEducation.course &&
+        education.institution !== existingEducation.institution &&
+        education.start !== existingEducation.start &&
+        education.end !== existingEducation.end
     );
-  }, []);
+
+    setAddedEducations(filteredEducations);
+  };
+
+  const deleteJob = (job: Job) => {
+    const filteredJobs = addedJobs.filter(
+      (existingJob: Job) =>
+        job.companyName !== existingJob.companyName &&
+        job.roleName !== existingJob.roleName &&
+        job.startDate !== existingJob.startDate
+    );
+
+    setAddedJobs(filteredJobs);
+  };
 
   const closeEducationDialog = () => {
     setShowEducationDialog(false);
@@ -449,112 +386,138 @@ const Account: React.FC = () => {
     const [educationToAdd, setEducationToAdd] =
       useState<Education>(EMPTY_EDUCATION);
     const [hasEnded, setHasEnded] = useState(false);
+    const [error, setError] = useState("");
+
+    const resetDialog = () => {
+      setEducationToAdd(EMPTY_EDUCATION);
+      setHasEnded(false);
+      setError("");
+    };
+
+    const onClose = () => {
+      resetDialog();
+      closeEducationDialog();
+    };
+
+    const onSubmitEducation = (event: any) => {
+      event.preventDefault();
+
+      setError("");
+
+      if (hasEnded && !isValid(educationToAdd.end)) {
+        setError("Data de término inválida");
+        return;
+      }
+
+      if (
+        educationToAdd &&
+        educationToAdd.course?.length &&
+        educationToAdd.institution?.length
+      ) {
+        const updated = {
+          ...educationToAdd,
+        };
+
+        if (!hasEnded) {
+          updated.end = undefined;
+        }
+
+        console.log("educationToAdd: ", updated);
+        setAddedEducations([...addedEducations, updated]);
+        onClose();
+      }
+    };
 
     return (
-      <Dialog
-        open={showEducationDialog}
-        onClose={closeEducationDialog}
-        fullWidth
-      >
-        <DialogTitle>Adicionar Educação</DialogTitle>
-        <DialogContent style={{ padding: "16px" }}>
-          <Stack direction="column" gap="16px">
-            <TextField
-              label="Instituição"
-              variant="outlined"
-              fullWidth
-              value={educationToAdd?.institution}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                if (!educationToAdd) return;
-
-                const educ = {
-                  ...educationToAdd,
-                  institution: event.target.value,
-                };
-                if (setEducationToAdd) setEducationToAdd(educ);
-              }}
-            />
-            <TextField
-              label="Curso"
-              variant="outlined"
-              fullWidth
-              value={educationToAdd?.course}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                if (!educationToAdd) return;
-
-                const educ = {
-                  ...educationToAdd,
-                  course: event.target.value,
-                };
-                if (setEducationToAdd) setEducationToAdd(educ);
-              }}
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={hasEnded}
-                  onChange={(_: any, checked: boolean) => setHasEnded(checked)}
-                />
-              }
-              label="Concluído"
-            />
-            <Stack direction="row" gap="16px" justifyContent="space-between">
-              <DatePicker
-                label="Data de início"
-                value={educationToAdd?.start ?? new Date()}
-                onChange={(newValue: any) => {
+      <Dialog open={showEducationDialog} onClose={onClose} fullWidth>
+        <form onSubmit={onSubmitEducation}>
+          <DialogTitle>Adicionar Educação</DialogTitle>
+          <DialogContent style={{ padding: "16px" }}>
+            <Stack direction="column" gap="16px">
+              <TextField
+                label="Instituição"
+                variant="outlined"
+                fullWidth
+                required
+                value={educationToAdd?.institution}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                   if (!educationToAdd) return;
 
                   const educ = {
                     ...educationToAdd,
-                    start: new Date(format(newValue, "dd-MM-yyyy")),
+                    institution: event.target.value,
                   };
-                  if (setEducationToAdd) setEducationToAdd(educ);
+                  setEducationToAdd(educ);
                 }}
               />
-              <DatePicker
-                disabled={!hasEnded}
-                label="Data de término"
-                value={educationToAdd?.end ?? new Date()}
-                onChange={(newValue: any) => {
+              <TextField
+                label="Curso"
+                variant="outlined"
+                fullWidth
+                required
+                value={educationToAdd?.course}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                   if (!educationToAdd) return;
 
                   const educ = {
                     ...educationToAdd,
-                    end: new Date(format(newValue, "dd-MM-yyyy")),
+                    course: event.target.value,
                   };
-                  if (setEducationToAdd) setEducationToAdd(educ);
+                  setEducationToAdd(educ);
                 }}
               />
-            </Stack>
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeEducationDialog}>Cancelar</Button>
-          <Button
-            onClick={() => {
-              if (
-                educationToAdd &&
-                educationToAdd.course?.length &&
-                educationToAdd.institution?.length
-              ) {
-                const updated = {
-                  ...educationToAdd,
-                };
-
-                if (!hasEnded) {
-                  updated.end = undefined;
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={hasEnded}
+                    onChange={(_: any, checked: boolean) =>
+                      setHasEnded(checked)
+                    }
+                  />
                 }
+                label="Concluído"
+              />
+              <Stack direction="row" gap="16px" justifyContent="space-between">
+                <DatePicker
+                  label="Data de início"
+                  value={educationToAdd?.start ?? new Date()}
+                  onChange={(newValue: any) => {
+                    if (!educationToAdd) return;
 
-                console.log("educationToAdd: ", updated);
-                setAddedEducations([...addedEducations, updated]);
-                closeEducationDialog();
-              }
-            }}
-          >
-            Adicionar
-          </Button>
-        </DialogActions>
+                    const educ = {
+                      ...educationToAdd,
+                      start: new Date(format(newValue, "dd-MM-yyyy")),
+                    };
+
+                    setEducationToAdd(educ);
+                  }}
+                />
+                <DatePicker
+                  disabled={!hasEnded}
+                  label="Data de término"
+                  value={educationToAdd?.end}
+                  onChange={(newValue: any) => {
+                    if (!educationToAdd) return;
+
+                    const educ = {
+                      ...educationToAdd,
+                      end: new Date(newValue),
+                    };
+
+                    setEducationToAdd(educ);
+                  }}
+                />
+              </Stack>
+            </Stack>
+            <Box height="40px" color="red" fontSize="0.8em" mt="16px">
+              {error}
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={onClose}>Cancelar</Button>
+            <Button type="submit">Adicionar</Button>
+          </DialogActions>
+        </form>
       </Dialog>
     );
   };
@@ -564,245 +527,270 @@ const Account: React.FC = () => {
     const [addedJobSkills, setAddedJobSkills] = useState<Skill[]>([]);
     const [jobSkillToAdd, setJobSkillToAdd] = useState<Skill>();
 
+    const resetDialog = () => {
+      setJobToAdd(EMPTY_PROFESSION);
+      setJobSkillToAdd(undefined);
+      setAddedJobSkills([]);
+    };
+
+    const onSubmitJob = (event: any) => {
+      event.preventDefault();
+
+      if (
+        jobToAdd &&
+        jobToAdd.companyName?.length &&
+        jobToAdd.location?.length &&
+        jobToAdd.description?.length &&
+        jobToAdd.roleName?.length
+      ) {
+        const updated: Job = {
+          ...jobToAdd,
+          skills: addedJobSkills,
+        };
+
+        if (jobToAdd.currentEmployment) {
+          updated.endDate = undefined;
+        }
+
+        setAddedJobs([...addedJobs, updated]);
+        onClose();
+      }
+    };
+
+    const onClose = () => {
+      closeProfessionalDialog();
+      resetDialog();
+    };
+
     return (
-      <Dialog open={showJobDialog} onClose={closeProfessionalDialog} fullWidth>
+      <Dialog open={showJobDialog} onClose={onClose} fullWidth>
         <DialogTitle>Adicionar Experiência</DialogTitle>
-        <DialogContent style={{ padding: "16px" }}>
-          <Stack direction="column" gap="16px">
-            <TextField
-              label="Empresa"
-              variant="outlined"
-              fullWidth
-              value={jobToAdd?.companyName}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                if (!jobToAdd) return;
+        <form onSubmit={onSubmitJob}>
+          <DialogContent style={{ padding: "16px" }}>
+            <Stack direction="column" gap="16px">
+              <TextField
+                label="Empresa"
+                variant="outlined"
+                fullWidth
+                required
+                value={jobToAdd?.companyName}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  if (!jobToAdd) return;
 
-                const educ = {
-                  ...jobToAdd,
-                  companyName: event.target.value,
-                };
-                setJobToAdd(educ);
-              }}
-            />
-            <TextField
-              label="Cargo"
-              variant="outlined"
-              fullWidth
-              value={jobToAdd?.roleName}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                if (!jobToAdd) return;
+                  const educ = {
+                    ...jobToAdd,
+                    companyName: event.target.value,
+                  };
+                  setJobToAdd(educ);
+                }}
+              />
+              <TextField
+                label="Cargo"
+                variant="outlined"
+                fullWidth
+                required
+                value={jobToAdd?.roleName}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  if (!jobToAdd) return;
 
-                const educ = {
-                  ...jobToAdd,
-                  roleName: event.target.value,
-                };
-                setJobToAdd(educ);
-              }}
-            />
-            <Select
-              variant="outlined"
-              fullWidth
-              value={jobToAdd.employmentType.toString()}
-              onChange={(event: SelectChangeEvent) => {
-                if (!jobToAdd) return;
+                  const educ = {
+                    ...jobToAdd,
+                    roleName: event.target.value,
+                  };
+                  setJobToAdd(educ);
+                }}
+              />
+              <Select
+                variant="outlined"
+                fullWidth
+                required
+                value={jobToAdd.employmentType.toString()}
+                onChange={(event: SelectChangeEvent) => {
+                  if (!jobToAdd) return;
 
-                const educ = {
-                  ...jobToAdd,
-                  employmentType: Number(event.target.value),
-                };
-                setJobToAdd(educ);
-              }}
-            >
-              {Object.keys(EmploymentType)
-                .filter((key: any) => isNaN(key))
-                .map((type: string) => {
-                  return (
-                    <MenuItem value={EmploymentType[type as any]} key={type}>
-                      {translateEmploymentType(
-                        EmploymentType[type as any] as any
-                      )}
-                    </MenuItem>
-                  );
-                })}
-            </Select>
-            <TextField
-              label="Localização"
-              variant="outlined"
-              fullWidth
-              value={jobToAdd.location}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                if (!jobToAdd) return;
+                  const educ = {
+                    ...jobToAdd,
+                    employmentType: Number(event.target.value),
+                  };
+                  setJobToAdd(educ);
+                }}
+              >
+                {Object.keys(EmploymentType)
+                  .filter((key: any) => isNaN(key))
+                  .map((type: string) => {
+                    return (
+                      <MenuItem value={EmploymentType[type as any]} key={type}>
+                        {translateEmploymentType(
+                          EmploymentType[type as any] as any
+                        )}
+                      </MenuItem>
+                    );
+                  })}
+              </Select>
+              <TextField
+                label="Localização"
+                variant="outlined"
+                fullWidth
+                required
+                value={jobToAdd.location}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  if (!jobToAdd) return;
 
-                const educ = {
-                  ...jobToAdd,
-                  location: event.target.value,
-                };
-                setJobToAdd(educ);
-              }}
-            />
-            <Select
-              variant="outlined"
-              fullWidth
-              value={jobToAdd.locationType.toString()}
-              onChange={(event: SelectChangeEvent) => {
-                if (!jobToAdd) return;
+                  const educ = {
+                    ...jobToAdd,
+                    location: event.target.value,
+                  };
+                  setJobToAdd(educ);
+                }}
+              />
+              <Select
+                variant="outlined"
+                fullWidth
+                required
+                value={jobToAdd.locationType.toString()}
+                onChange={(event: SelectChangeEvent) => {
+                  if (!jobToAdd) return;
 
-                const educ = {
-                  ...jobToAdd,
-                  locationType: Number(event.target.value),
-                };
-                setJobToAdd(educ);
-              }}
-            >
-              {Object.keys(LocationType)
-                .filter((key: any) => isNaN(key))
-                .map((type: string) => {
-                  return (
-                    <MenuItem value={LocationType[type as any]} key={type}>
-                      {translateLocationType(LocationType[type as any] as any)}
-                    </MenuItem>
-                  );
-                })}
-            </Select>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={jobToAdd.currentEmployment}
-                  onChange={(_: any, checked: boolean) => {
-                    const prof = {
+                  const educ = {
+                    ...jobToAdd,
+                    locationType: Number(event.target.value),
+                  };
+                  setJobToAdd(educ);
+                }}
+              >
+                {Object.keys(LocationType)
+                  .filter((key: any) => isNaN(key))
+                  .map((type: string) => {
+                    return (
+                      <MenuItem value={LocationType[type as any]} key={type}>
+                        {translateLocationType(
+                          LocationType[type as any] as any
+                        )}
+                      </MenuItem>
+                    );
+                  })}
+              </Select>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={jobToAdd.currentEmployment}
+                    onChange={(_: any, checked: boolean) => {
+                      const prof = {
+                        ...jobToAdd,
+                        currentEmployment: checked,
+                      };
+                      setJobToAdd(prof);
+                    }}
+                  />
+                }
+                label="Ainda trabalho aqui"
+              />
+              <Stack direction="row" gap="16px" justifyContent="space-between">
+                <DatePicker
+                  label="Início"
+                  value={jobToAdd?.startDate ?? new Date()}
+                  onChange={(newValue: any) => {
+                    if (!jobToAdd) return;
+
+                    const profession = {
                       ...jobToAdd,
-                      currentEmployment: checked,
+                      startData: new Date(format(newValue, "dd-MM-yyyy")),
                     };
-                    setJobToAdd(prof);
+                    setJobToAdd(profession);
                   }}
                 />
-              }
-              label="Ainda trabalho aqui"
-            />
-            <Stack direction="row" gap="16px" justifyContent="space-between">
-              <DatePicker
-                label="Início"
-                value={jobToAdd?.startDate ?? new Date()}
-                onChange={(newValue: any) => {
-                  if (!jobToAdd) return;
+                <DatePicker
+                  disabled={jobToAdd.currentEmployment}
+                  label="Saída"
+                  value={jobToAdd?.endDate ?? new Date()}
+                  onChange={(newValue: any) => {
+                    if (!jobToAdd) return;
 
-                  const profession = {
-                    ...jobToAdd,
-                    startData: new Date(format(newValue, "dd-MM-yyyy")),
-                  };
-                  setJobToAdd(profession);
-                }}
-              />
-              <DatePicker
-                disabled={jobToAdd.currentEmployment}
-                label="Saída"
-                value={jobToAdd?.endDate ?? new Date()}
-                onChange={(newValue: any) => {
-                  if (!jobToAdd) return;
+                    const profession = {
+                      ...jobToAdd,
+                      end: new Date(newValue),
+                    };
 
-                  const profession = {
-                    ...jobToAdd,
-                    endDate: new Date(format(newValue, "dd-MM-yyyy")),
-                  };
-                  setJobToAdd(profession);
-                }}
-              />
-            </Stack>
-            <TextField
-              label="Descrição das atividades"
-              variant="outlined"
-              fullWidth
-              multiline
-              maxRows={6}
-              minRows={3}
-              value={jobToAdd.description}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                if (!jobToAdd) return;
-
-                const educ = {
-                  ...jobToAdd,
-                  description: event.target.value,
-                };
-                setJobToAdd(educ);
-              }}
-            />
-            <Stack direction="column" gap="16px">
-              <Stack direction="row" gap="16px">
-                <Box flexGrow={1}>
-                  <Autocomplete
-                    selectOnFocus
-                    clearOnBlur
-                    handleHomeEndKeys
-                    id="outlined-basic"
-                    renderInput={(params) => (
-                      <TextField {...params} label="Habilidades usadas" />
-                    )}
-                    options={[
-                      ...DATABASES,
-                      ...LANGUAGES,
-                      ...FRAMEWORKS,
-                      ...OTHER_SKILLS,
-                    ]}
-                    value={jobSkillToAdd}
-                    onChange={(_: unknown, value: Skill | null) =>
-                      setJobSkillToAdd(value ?? undefined)
-                    }
-                  />
-                </Box>
-                <Box flexGrow={0}>
-                  <Button
-                    variant="contained"
-                    style={{ height: "100%" }}
-                    onClick={() => {
-                      if (
-                        jobSkillToAdd &&
-                        !addedJobSkills.some(
-                          (skill: Skill) => skill.value === jobSkillToAdd.value
-                        )
-                      ) {
-                        setAddedJobSkills([
-                          ...(addedJobSkills ?? []),
-                          jobSkillToAdd,
-                        ]);
-                      }
-                    }}
-                  >
-                    Add
-                  </Button>
-                </Box>
+                    setJobToAdd(profession);
+                  }}
+                />
               </Stack>
-              {SelectedSkills({
-                skills: addedJobSkills,
-                setSkills: setAddedJobSkills,
-              })}
+              <TextField
+                label="Descrição das atividades"
+                variant="outlined"
+                fullWidth
+                multiline
+                required
+                maxRows={6}
+                minRows={3}
+                value={jobToAdd.description}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  if (!jobToAdd) return;
+
+                  const educ = {
+                    ...jobToAdd,
+                    description: event.target.value,
+                  };
+                  setJobToAdd(educ);
+                }}
+              />
+              <Stack direction="column" gap="16px">
+                <Stack direction="row" gap="16px">
+                  <Box flexGrow={1}>
+                    <Autocomplete
+                      selectOnFocus
+                      clearOnBlur
+                      handleHomeEndKeys
+                      renderInput={(params) => (
+                        <TextField {...params} label="Habilidades usadas" />
+                      )}
+                      options={[
+                        ...DATABASES,
+                        ...LANGUAGES,
+                        ...FRAMEWORKS,
+                        ...OTHER_SKILLS,
+                      ]}
+                      value={jobSkillToAdd}
+                      onChange={(_: unknown, value: Skill | null) =>
+                        setJobSkillToAdd(value ?? undefined)
+                      }
+                    />
+                  </Box>
+                  <Box flexGrow={0}>
+                    <Button
+                      variant="contained"
+                      style={{ height: "100%" }}
+                      onClick={() => {
+                        if (
+                          jobSkillToAdd &&
+                          !addedJobSkills.some(
+                            (skill: Skill) =>
+                              skill.value === jobSkillToAdd.value
+                          )
+                        ) {
+                          setAddedJobSkills([
+                            ...(addedJobSkills ?? []),
+                            jobSkillToAdd,
+                          ]);
+                        }
+                      }}
+                    >
+                      Add
+                    </Button>
+                  </Box>
+                </Stack>
+                {SelectedSkills({
+                  skills: addedJobSkills,
+                  setSkills: setAddedJobSkills,
+                })}
+              </Stack>
             </Stack>
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeProfessionalDialog}>Cancelar</Button>
-          <Button
-            onClick={() => {
-              if (
-                jobToAdd &&
-                jobToAdd.companyName?.length &&
-                jobToAdd.location?.length &&
-                jobToAdd.description?.length &&
-                jobToAdd.roleName?.length
-              ) {
-                const updated = {
-                  ...jobToAdd,
-                };
-                if (jobToAdd.currentEmployment) {
-                  updated.endDate = undefined;
-                }
-                setAddedJobs([...addedJobs, updated]);
-                closeProfessionalDialog();
-              }
-            }}
-          >
-            Adicionar
-          </Button>
-        </DialogActions>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={onClose}>Cancelar</Button>
+            <Button type="submit">Adicionar</Button>
+          </DialogActions>
+        </form>
       </Dialog>
     );
   };
@@ -988,7 +976,6 @@ const Account: React.FC = () => {
               selectOnFocus
               clearOnBlur
               handleHomeEndKeys
-              id="outlined-basic"
               renderInput={(params) => (
                 <TextField {...params} label="Linguagens" />
               )}
@@ -1026,7 +1013,6 @@ const Account: React.FC = () => {
                 selectOnFocus
                 clearOnBlur
                 handleHomeEndKeys
-                id="outlined-basic"
                 renderInput={(params) => (
                   <TextField {...params} label="Frameworks" />
                 )}
@@ -1071,7 +1057,6 @@ const Account: React.FC = () => {
                 selectOnFocus
                 clearOnBlur
                 handleHomeEndKeys
-                id="outlined-basic"
                 renderInput={(params) => (
                   <TextField {...params} label="Bancos de dados" />
                 )}
@@ -1116,7 +1101,6 @@ const Account: React.FC = () => {
                 selectOnFocus
                 clearOnBlur
                 handleHomeEndKeys
-                id="outlined-basic"
                 renderInput={(params) => (
                   <TextField {...params} label="Outras habilidades" />
                 )}
@@ -1169,9 +1153,10 @@ const Account: React.FC = () => {
           <Stack direction="column" gap="8px">
             {addedEducations.map((education: Education) => {
               return (
-                <EducationFields
+                <EducationCard
                   key={`${education.course}-${education.institution}`}
                   education={education}
+                  deleteEducation={deleteEducation}
                 />
               );
             })}
@@ -1193,9 +1178,10 @@ const Account: React.FC = () => {
           <Stack direction="column" gap="8px">
             {addedJobs.map((job: Job) => {
               return (
-                <JobFields
+                <JobCard
                   key={`${job.companyName}-${job.roleName}-${job.startDate}`}
                   job={job}
+                  deleteJob={deleteJob}
                 />
               );
             })}

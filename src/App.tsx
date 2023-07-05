@@ -21,7 +21,7 @@ const router = createBrowserRouter([
     element: <Account />,
   },
   {
-    path: "/profile",
+    path: "/profile/:authId",
     element: <Profile />,
   },
 ]);

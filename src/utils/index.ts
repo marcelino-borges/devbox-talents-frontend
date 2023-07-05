@@ -1,4 +1,4 @@
-import { EmploymentType, LocationType } from "../types";
+import { EmploymentType, LocationType, Skill } from "../types";
 
 export const translateEmploymentType = (type: EmploymentType) => {
   switch (type) {
@@ -32,4 +32,21 @@ export const translateLocationType = (type: LocationType) => {
     default:
       return "Desconhecido";
   }
+};
+
+export const joinSkills = (skills: Skill[]): string => {
+  return skills
+    .map((skill: Skill, index: number) => {
+      return (
+        skill.label +
+        `${
+          index === skills.length - 2
+            ? " e "
+            : index < skills.length - 1
+            ? ", "
+            : "."
+        }`
+      );
+    })
+    .join("");
 };
