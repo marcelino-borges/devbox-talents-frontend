@@ -12,5 +12,6 @@ export const translateFirebaseError = (error: string) => {
     error.includes("auth/user-not-found")
   )
     return "Credenciais inválidas ou usuário não existe.";
-  else return "Erro de autenticação.";
+
+  return null;
 };

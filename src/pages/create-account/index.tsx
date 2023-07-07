@@ -228,7 +228,8 @@ const Account: React.FC = () => {
         setIsLoading(false);
         const translatedError = translateFirebaseError(error.message);
         console.error(translatedError);
-        setSubmitError("Erro ao criar sua conta.");
+        if (translatedError) setSubmitError(translatedError);
+        else setSubmitError("Erro ao criar sua conta.");
       }
     );
   };
@@ -266,7 +267,8 @@ const Account: React.FC = () => {
         setIsLoading(false);
         const translatedError = translateFirebaseError(error.message);
         console.error(translatedError);
-        setSubmitError("Erro ao atualizar sua conta.");
+        if (translatedError) setSubmitError(translatedError);
+        else setSubmitError("Erro ao atualizar sua conta.");
       });
   };
 
@@ -821,6 +823,12 @@ const Account: React.FC = () => {
         <Box textAlign="center" fontWeight={800}>
           <h2>{isEditing ? "Editar conta" : "Criar conta"}</h2>
         </Box>
+        {!isEditing && (
+          <Box fontSize="0.8em" marginBottom="32px">
+            Cadastre-se no nosso banco de talentos para receber propostas para
+            nossas próximas vagas.
+          </Box>
+        )}
         {!!errorGetTalent.length && (
           <Stack
             direction="column"
