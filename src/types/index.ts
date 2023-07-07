@@ -4,6 +4,7 @@ export interface Talent {
   lastName: string;
   email: string;
   authId: string;
+  isAdmin?: boolean;
   languages?: Skill[];
   frameworks?: Skill[];
   databases?: Skill[];

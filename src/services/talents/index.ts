@@ -1,6 +1,16 @@
 import api from "../../config/axios";
 import { Talent, TalentQuery } from "../../types";
 
+export const queryTalents = async (
+  query: string,
+  pageSize = 10,
+  pageNumber = 1
+) => {
+  return api.get(
+    `/talents/query?q=${query}&pageSize=${pageSize}&pageNumber=${pageNumber}`
+  );
+};
+
 export const getTalents = async () => {
   return api.get("/talents");
 };

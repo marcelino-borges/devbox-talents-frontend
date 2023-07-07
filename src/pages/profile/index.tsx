@@ -1,25 +1,31 @@
-import { Box, CircularProgress, Stack, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Stack,
+  useMediaQuery,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getTalent } from "../../services/talents";
 import { AxiosResponse } from "axios";
+import { format } from "date-fns";
+import {
+  Edit,
+  GitHub,
+  Instagram,
+  Link as LinkIcon,
+  LinkedIn,
+} from "@mui/icons-material";
+import { getTalent } from "../../services/talents";
 import { ApiResult, Education, Job, Talent } from "../../types";
 import {
   joinSkills,
   translateEmploymentType,
   translateLocationType,
 } from "../../utils";
-import {
-  Edit,
-  GitHub,
-  Instagram,
-  Link,
-  LinkedIn,
-  Person,
-} from "@mui/icons-material";
 import { PRIMARY_COLOR } from "../../constants/colors";
-import { DataGroup, UserAvatar } from "./style";
-import { format } from "date-fns";
+import { DataGroup } from "./style";
+import AvatarBlank from "../../components/avatar-blank";
 
 interface DataRowProps {
   name: string;
@@ -105,11 +111,22 @@ const Profile: React.FC = () => {
             }}
           />
         </Stack>
+
+        {!!profile?.isAdmin && (
+          <Box>
+            {" "}
+            <Button
+              onClick={() => navigate("/search")}
+              style={{ marginBottom: "32px" }}
+              variant="contained"
+            >
+              Buscar talentos
+            </Button>
+          </Box>
+        )}
         <DataGroup direction="row">
           <Box pr="32px" height="100%">
-            <UserAvatar>
-              <Person />
-            </UserAvatar>
+            <AvatarBlank />
           </Box>
           <Stack
             direction="column"
@@ -118,6 +135,11 @@ const Profile: React.FC = () => {
             flexGrow={1}
             borderLeft="1px solid #f5f5f5"
           >
+            {!!profile.isAdmin && (
+              <Box color={PRIMARY_COLOR} fontWeight={600}>
+                Administrador
+              </Box>
+            )}
             <Section title="Dados pessoais">
               <DataField name="Nome" value={profile?.firstName || ""} />
               <DataField name="Sobrenome" value={profile?.lastName || ""} />
@@ -237,7 +259,7 @@ const Profile: React.FC = () => {
           </Stack>
           {profile?.social.personalWebsite && (
             <Stack direction="row" alignItems="center" gap="8px">
-              <Link style={{ color: "#b8b8b8" }} />
+              <LinkIcon style={{ color: "#b8b8b8" }} />
               <a href={profile?.social.personalWebsite} target="_blank">
                 <strong>{profile?.social.personalWebsite}</strong>
               </a>

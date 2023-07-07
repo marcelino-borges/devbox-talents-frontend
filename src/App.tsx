@@ -6,6 +6,7 @@ import Login from "./pages/login";
 import Account from "./pages/create-account";
 import { initializeFirebaseApp } from "./config/firebase";
 import Profile from "./pages/profile";
+import SearchTalents from "./pages/search-talents";
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
   {
     path: "/profile/:authId",
     element: <Profile />,
+  },
+  {
+    path: "/search",
+    element: <SearchTalents />,
   },
 ]);
 

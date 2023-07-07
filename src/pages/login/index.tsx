@@ -1,15 +1,25 @@
 import React, { useState } from "react";
-import { Box, Button, CircularProgress, Stack, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  IconButton,
+  InputAdornment,
+  Stack,
+  TextField,
+} from "@mui/material";
 import { signIn } from "../../services/auth";
 import { User } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { translateFirebaseError } from "../../utils/firebase";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const login = (event: any) => {
@@ -29,7 +39,8 @@ const Login: React.FC = () => {
       (error: any) => {
         setIsLoading(false);
         const translatedError = translateFirebaseError(error.message);
-        setError(translatedError);
+        if (translatedError) setError(translatedError);
+        else setError("Erro ao entrar.");
         console.error("Erro ao entrar: ", translatedError);
       }
     );
@@ -87,12 +98,30 @@ const Login: React.FC = () => {
             label="Senha"
             variant="outlined"
             fullWidth
-            type="password"
+            type={showPassword ? "text" : "password"}
             value={password}
             onChange={(
               event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
             ) => {
               setPassword(event.target.value);
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => setShowPassword((current) => !current)}
+                    onMouseDown={(
+                      event: React.MouseEvent<HTMLButtonElement>
+                    ) => {
+                      event.preventDefault();
+                    }}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
             }}
           />
           <Box mt="16px">
