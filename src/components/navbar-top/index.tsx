@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Stack, useMediaQuery } from "@mui/material";
 import { IMAGES } from "../../assets/imgs";
 import { getStorage } from "../../utils/storage";

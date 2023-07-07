@@ -9,8 +9,6 @@ import {
   translateEmploymentType,
   translateLocationType,
 } from "../../utils";
-import JobCard from "../../components/job-card";
-import EducationCard from "../../components/education-card";
 import {
   Edit,
   GitHub,
