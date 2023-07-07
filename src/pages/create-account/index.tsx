@@ -130,7 +130,19 @@ const Account: React.FC = () => {
     useState<PersonalData>(EMPTY_PERSONAL_DATA);
   const [isLoading, setIsLoading] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [errorGetTalent, setErrorGetTalent] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    if (authId) {
+      if (!getStorage(TOKEN_STORAGE_KEY)?.length) {
+        navigate("/");
+        return;
+      }
+      setIsEditing(true);
+      getTalentDataAndFillForm(authId);
+    }
+  }, [authId]);
 
   const clearErrors = () => {
     setSocialErrors(EMPTY_SOCIAL);
@@ -258,9 +270,9 @@ const Account: React.FC = () => {
       });
   };
 
-  const getTalentData = (talentId: string) => {
+  const getTalentDataAndFillForm = (talentId: string) => {
     setIsLoading(true);
-    getTalent({ id: talentId })
+    getTalent({ authId: talentId })
       .then((response: AxiosResponse) => {
         const result: ApiResult = response.data;
         const talent: Talent = result.data;
@@ -271,6 +283,7 @@ const Account: React.FC = () => {
           setAddedFrameworks(talent.frameworks ?? []);
           setAddedEducations(talent.educationHistory ?? []);
           setAddedOtherSkills(talent.otherSkills ?? []);
+          setAddedJobs(talent.jobHistory ?? []);
           setSocial(talent.social);
           const personalData: PersonalData = {
             firstName: talent.firstName,
@@ -281,21 +294,13 @@ const Account: React.FC = () => {
           setPersonalData(personalData);
         }
       })
+      .catch(() => {
+        setErrorGetTalent("Erro ao buscar seus dados");
+      })
       .finally(() => {
         setIsLoading(false);
       });
   };
-
-  useEffect(() => {
-    if (authId) {
-      if (!getStorage(TOKEN_STORAGE_KEY)?.length) {
-        navigate("/");
-        return;
-      }
-      setIsEditing(true);
-      getTalentData(authId);
-    }
-  }, [authId]);
 
   const SelectedSkills = ({ skills, setSkills }: any) => {
     if (!skills.length) return null;
@@ -798,7 +803,13 @@ const Account: React.FC = () => {
   };
 
   return (
-    <Box id="welcome-root" display="center" justifyContent="center" pb="100px">
+    <Box
+      id="welcome-root"
+      display="center"
+      justifyContent="center"
+      pb="100px"
+      pt="50px"
+    >
       <Stack
         id="welcome-fields"
         direction="column"
@@ -806,11 +817,24 @@ const Account: React.FC = () => {
         width="100%"
         justifyContent="center"
         gap="16px"
-        mt="50px"
       >
         <Box textAlign="center" fontWeight={800}>
-          <h2>Criar conta</h2>
+          <h2>{isEditing ? "Editar conta" : "Criar conta"}</h2>
         </Box>
+        {!!errorGetTalent.length && (
+          <Stack
+            direction="column"
+            pb="50px"
+            fontSize="0.8em"
+            alignItems="center"
+            color={PRIMARY_COLOR}
+          >
+            {errorGetTalent}
+            <a href="#" onClick={() => location.reload()}>
+              ATUALIZAR PÁGINA
+            </a>
+          </Stack>
+        )}
         {!!submitError.length && (
           <Box color="red" fontSize="0.8em" textAlign="center">
             {submitError}
@@ -1140,7 +1164,11 @@ const Account: React.FC = () => {
             onClick={() => {
               setShowEducationDialog(true);
             }}
-            style={{ fontSize: "1em", color: PRIMARY_COLOR, cursor: "pointer" }}
+            style={{
+              fontSize: "1em",
+              color: PRIMARY_COLOR,
+              cursor: "pointer",
+            }}
           />
         </Stack>
         {!!addedEducations.length && (
@@ -1165,7 +1193,11 @@ const Account: React.FC = () => {
             onClick={() => {
               setShowJobDialog(true);
             }}
-            style={{ fontSize: "1em", color: PRIMARY_COLOR, cursor: "pointer" }}
+            style={{
+              fontSize: "1em",
+              color: PRIMARY_COLOR,
+              cursor: "pointer",
+            }}
           />
         </Stack>
         {!!addedJobs.length && (
@@ -1267,20 +1299,30 @@ const Account: React.FC = () => {
           <Button
             fullWidth
             variant="contained"
-            onClick={isEditing ? updateTalentData : signUp}
+            onClick={() => {
+              setErrorGetTalent("");
+
+              if (isEditing) {
+                updateTalentData();
+              } else {
+                signUp();
+              }
+            }}
           >
             {isLoading ? (
               <CircularProgress size="24px" style={{ color: "white" }} />
             ) : isEditing ? (
-              "Atualizar conta"
+              "Salvar"
             ) : (
               "Criar conta"
             )}
           </Button>
         </Box>
-        <Box textAlign="center">
-          Já tem conta? <Link to={"/account"}>Entre aqui</Link>
-        </Box>
+        {!isEditing && (
+          <Box textAlign="center">
+            Já tem conta? <Link to={"/account"}>Entre aqui</Link>
+          </Box>
+        )}
       </Stack>
     </Box>
   );
