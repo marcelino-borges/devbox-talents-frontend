@@ -220,7 +220,7 @@ const Account: React.FC = () => {
           .catch((error: any) => {
             const message = error.response.data.message;
             console.error(message);
-            setSubmitError(message);
+            setSubmitError("Erro ao criar seu perfil.");
             deleteAccount();
           });
       },
@@ -228,7 +228,7 @@ const Account: React.FC = () => {
         setIsLoading(false);
         const translatedError = translateFirebaseError(error.message);
         console.error(translatedError);
-        setSubmitError(translatedError);
+        setSubmitError("Erro ao criar sua conta.");
       }
     );
   };
@@ -266,7 +266,7 @@ const Account: React.FC = () => {
         setIsLoading(false);
         const translatedError = translateFirebaseError(error.message);
         console.error(translatedError);
-        setSubmitError(translatedError);
+        setSubmitError("Erro ao atualizar sua conta.");
       });
   };
 
