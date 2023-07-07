@@ -231,24 +231,32 @@ const Profile: React.FC = () => {
           <Box height="16px" />
           <Stack direction="row" alignItems="center" gap="8px">
             <LinkedIn style={{ color: "#b8b8b8" }} />
-            <strong>{profile?.social.linkedin}</strong>
+            <a href={profile?.social.linkedin}>
+              <strong>{profile?.social.linkedin}</strong>
+            </a>
           </Stack>
           {profile?.social.personalWebsite && (
             <Stack direction="row" alignItems="center" gap="8px">
               <Link style={{ color: "#b8b8b8" }} />
-              <strong>{profile?.social.personalWebsite}</strong>
+              <a href={profile?.social.personalWebsite}>
+                <strong>{profile?.social.personalWebsite}</strong>
+              </a>
             </Stack>
           )}
           {profile?.social.instagram && (
             <Stack direction="row" alignItems="center" gap="8px">
               <Instagram style={{ color: "#b8b8b8" }} />
-              <strong>{profile?.social.instagram}</strong>
+              <a href={profile?.social.instagram}>
+                <strong>{profile?.social.instagram}</strong>
+              </a>
             </Stack>
           )}
           {profile?.social.git && (
             <Stack direction="row" alignItems="center" gap="8px">
               <GitHub style={{ color: "#b8b8b8" }} />
-              <strong>{profile?.social.git}</strong>
+              <a href={profile?.social.git}>
+                <strong>{profile?.social.git}</strong>
+              </a>
             </Stack>
           )}
         </DataGroup>
