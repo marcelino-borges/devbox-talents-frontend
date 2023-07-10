@@ -57,10 +57,20 @@ export enum LocationType {
   HYBRID,
 }
 
-export interface TalentQuery {
+export interface GetTalentQuery {
   id?: string;
   email?: string;
   authId?: string;
+}
+
+export interface TalentSearchQuery {
+  freeText?: string;
+  name?: string;
+  email?: string;
+  languages?: string;
+  frameworks?: string;
+  databases?: string;
+  otherSkills?: string;
 }
 
 export interface Skill {

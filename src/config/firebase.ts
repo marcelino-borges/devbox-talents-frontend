@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { clearStorage, setSessionStorage } from "../utils/storage";
-import { TOKEN_STORAGE_KEY, USER_STORAGE_KEY } from "../constants";
+import { clearStorage, setStorage } from "../utils/storage";
+import { TOKEN_STORAGE_KEY, FIREBASE_USER_STORAGE_KEY } from "../constants";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -20,8 +20,8 @@ const initializeFirebaseApp = () => {
   auth.onIdTokenChanged(async (user) => {
     if (user) {
       const token = await user.getIdToken();
-      setSessionStorage(TOKEN_STORAGE_KEY, token);
-      setSessionStorage(USER_STORAGE_KEY, JSON.stringify(user));
+      setStorage(TOKEN_STORAGE_KEY, token);
+      setStorage(FIREBASE_USER_STORAGE_KEY, JSON.stringify(user));
     } else {
       clearStorage(TOKEN_STORAGE_KEY);
     }

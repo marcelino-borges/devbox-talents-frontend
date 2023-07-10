@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -11,8 +11,12 @@ import {
 import { signIn } from "../../services/auth";
 import { User } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { translateFirebaseError } from "../../utils/firebase";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { translateFirebaseError } from "../../utils/firebase";
+import { getStorage, setStorage } from "../../utils/storage";
+import { FIREBASE_USER_STORAGE_KEY, TALENT_STORAGE_KEY } from "../../constants";
+import { Talent, GetTalentQuery } from "../../types";
+import { getTalent } from "../../services/talents";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -21,6 +25,10 @@ const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  const navigateToProfile = (authId: string) => {
+    navigate(`/profile/${authId}`);
+  };
 
   const login = (event: any) => {
     event.preventDefault();
@@ -34,7 +42,15 @@ const Login: React.FC = () => {
       password,
       (user: User) => {
         setIsLoading(false);
-        navigate(`/profile/${user.uid}`);
+        navigateToProfile(user.uid);
+
+        const query: GetTalentQuery = {
+          authId: user.uid,
+        };
+
+        getTalent(query, (talent: Talent) => {
+          setStorage(TALENT_STORAGE_KEY, JSON.stringify(talent));
+        });
       },
       (error: any) => {
         setIsLoading(false);
@@ -45,6 +61,18 @@ const Login: React.FC = () => {
       }
     );
   };
+
+  useEffect(() => {
+    const storedUser = getStorage(FIREBASE_USER_STORAGE_KEY);
+
+    if (storedUser) {
+      const user = JSON.parse(storedUser) as User;
+
+      if (user) {
+        navigate(`/profile/${user.uid}`);
+      }
+    }
+  }, [navigate]);
 
   return (
     <Box id="login-root" display="center" justifyContent="center">
@@ -135,7 +163,7 @@ const Login: React.FC = () => {
           </Box>
         </form>
         <Box textAlign="center" mt="16px">
-          Não tem conta? <a href="/account">Crie aqui</a>
+          Não tem conta? <a href="/register">Crie aqui</a>
         </Box>
       </Stack>
     </Box>

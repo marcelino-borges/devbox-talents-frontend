@@ -7,7 +7,11 @@ import {
   signOut,
 } from "firebase/auth";
 import { clearStorage } from "../../utils/storage";
-import { TOKEN_STORAGE_KEY, USER_STORAGE_KEY } from "../../constants";
+import {
+  TOKEN_STORAGE_KEY,
+  FIREBASE_USER_STORAGE_KEY,
+  TALENT_STORAGE_KEY,
+} from "../../constants";
 
 export const createAccount = async (
   email: string,
@@ -54,8 +58,9 @@ export const logout = async (): Promise<boolean> => {
   const auth = getAuth();
   return signOut(auth)
     .then(() => {
-      clearStorage(USER_STORAGE_KEY);
+      clearStorage(FIREBASE_USER_STORAGE_KEY);
       clearStorage(TOKEN_STORAGE_KEY);
+      clearStorage(TALENT_STORAGE_KEY);
       return true;
     })
     .catch((error) => {

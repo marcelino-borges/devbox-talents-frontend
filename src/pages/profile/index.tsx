@@ -7,7 +7,6 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { AxiosResponse } from "axios";
 import { format } from "date-fns";
 import {
   Edit,
@@ -17,7 +16,7 @@ import {
   LinkedIn,
 } from "@mui/icons-material";
 import { getTalent } from "../../services/talents";
-import { ApiResult, Education, Job, Talent } from "../../types";
+import { Education, Job, Talent } from "../../types";
 import {
   joinSkills,
   translateEmploymentType,
@@ -40,21 +39,20 @@ const Profile: React.FC = () => {
 
   useEffect(() => {
     if (authId) {
-      getTalent({ authId })
-        .then((response: AxiosResponse) => {
-          const result: ApiResult = response.data;
-          const talent = result.data;
-
+      getTalent(
+        { authId },
+        (talent: Talent) => {
           if (talent) {
             setProfile(talent);
           } else {
             console.error("Erro: Não conseguimos buscar o talento");
           }
-        })
-        .catch((error: any) => {
+        },
+        (error: any) => {
           const message = error.response.data.message;
           console.error("Erro: ", message);
-        });
+        }
+      );
     }
   }, [authId]);
 
@@ -107,7 +105,7 @@ const Profile: React.FC = () => {
           <Edit
             style={{ color: PRIMARY_COLOR, cursor: "pointer" }}
             onClick={() => {
-              navigate(`/account/${profile.authId}`);
+              navigate(`/edit-account/${profile.authId}`);
             }}
           />
         </Stack>

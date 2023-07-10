@@ -27,6 +27,9 @@ import {
   Visibility,
 } from "@mui/icons-material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { format, isValid } from "date-fns";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { User } from "firebase/auth";
 import {
   DATABASES,
   EMAIL_VALIDATOR,
@@ -35,10 +38,10 @@ import {
   OTHER_SKILLS,
   PASSWORD_VALIDATOR,
   TOKEN_STORAGE_KEY,
-  USER_STORAGE_KEY,
+  FIREBASE_USER_STORAGE_KEY,
+  TALENT_STORAGE_KEY,
 } from "../../constants";
 import {
-  ApiResult,
   Education,
   EmploymentType,
   Job,
@@ -47,14 +50,10 @@ import {
   Talent,
 } from "../../types";
 import { PRIMARY_COLOR } from "../../constants/colors";
-import { format, isValid } from "date-fns";
 import { translateEmploymentType, translateLocationType } from "../../utils";
-import { Link, useNavigate, useParams } from "react-router-dom";
 import { createTalent, getTalent, updateTalent } from "../../services/talents";
-import { AxiosResponse } from "axios";
 import { createAccount, deleteAccount } from "../../services/auth";
-import { User } from "firebase/auth";
-import { getStorage, setSessionStorage } from "../../utils/storage";
+import { getStorage, setStorage } from "../../utils/storage";
 import { translateFirebaseError } from "../../utils/firebase";
 import JobCard from "../../components/job-card";
 import EducationCard from "../../components/education-card";
@@ -142,7 +141,7 @@ const Account: React.FC = () => {
       setIsEditing(true);
       getTalentDataAndFillForm(authId);
     }
-  }, [authId]);
+  }, [authId, navigate]);
 
   const clearErrors = () => {
     setSocialErrors(EMPTY_SOCIAL);
@@ -192,7 +191,7 @@ const Account: React.FC = () => {
       password,
       (user: User) => {
         setIsLoading(false);
-        setSessionStorage(USER_STORAGE_KEY, JSON.stringify(user));
+        setStorage(FIREBASE_USER_STORAGE_KEY, JSON.stringify(user));
 
         const newTalent: Talent = {
           authId: user.uid,
@@ -258,11 +257,12 @@ const Account: React.FC = () => {
       },
     };
 
-    updateTalent(talent)
-      .then(() => {
-        setIsLoading(false);
-        navigate(`/profile/${personalData.authId}`);
-      })
+    updateTalent(talent, (talentUpdated: Talent) => {
+      setIsLoading(false);
+      setStorage(TALENT_STORAGE_KEY, JSON.stringify(talentUpdated));
+      navigate(`/profile/${personalData.authId}`);
+    })
+      .then()
       .catch((error: any) => {
         setIsLoading(false);
         const translatedError = translateFirebaseError(error.message);
@@ -274,11 +274,9 @@ const Account: React.FC = () => {
 
   const getTalentDataAndFillForm = (talentId: string) => {
     setIsLoading(true);
-    getTalent({ authId: talentId })
-      .then((response: AxiosResponse) => {
-        const result: ApiResult = response.data;
-        const talent: Talent = result.data;
-
+    getTalent(
+      { authId: talentId },
+      (talent: Talent) => {
         if (talent) {
           setAddedLanguages(talent.languages ?? []);
           setAddedDatabases(talent.databases ?? []);
@@ -295,13 +293,13 @@ const Account: React.FC = () => {
           };
           setPersonalData(personalData);
         }
-      })
-      .catch(() => {
-        setErrorGetTalent("Erro ao buscar seus dados");
-      })
-      .finally(() => {
         setIsLoading(false);
-      });
+      },
+      () => {
+        setErrorGetTalent("Erro ao buscar seus dados");
+        setIsLoading(false);
+      }
+    );
   };
 
   const SelectedSkills = ({ skills, setSkills }: any) => {
@@ -1327,8 +1325,8 @@ const Account: React.FC = () => {
           </Button>
         </Box>
         {!isEditing && (
-          <Box textAlign="center">
-            Já tem conta? <Link to={"/account"}>Entre aqui</Link>
+          <Box textAlign="center" mt="16px">
+            Já tem conta? <Link to={"/"}>Entre aqui</Link>
           </Box>
         )}
       </Stack>

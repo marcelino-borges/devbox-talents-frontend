@@ -1,20 +1,21 @@
+import React, { useCallback, useEffect, useState } from "react";
+import { AxiosResponse } from "axios";
 import {
   Box,
+  Button,
   CircularProgress,
-  IconButton,
-  InputAdornment,
+  Unstable_Grid2 as Grid,
   Stack,
   TablePagination,
   TextField,
   useMediaQuery,
 } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
 import { queryTalents } from "../../services/talents";
-import { AxiosResponse } from "axios";
-import { Search as SearchIcon } from "@mui/icons-material";
 import PaginationActions from "./table-pagination-actions";
 import { TalentSummary } from "./interfaces";
 import CardSearchTalent from "./talent-card";
+import { Search } from "@mui/icons-material";
+import { TalentSearchQuery } from "../../types";
 
 interface TalentsResult {
   talents: TalentSummary[];
@@ -23,7 +24,13 @@ interface TalentsResult {
 
 const SearchTalents: React.FC = () => {
   const isMobile = useMediaQuery("(max-width: 547px)");
-  const [input, setInput] = useState("");
+  const [freeText, setFreeText] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [languages, setLanguages] = useState("");
+  const [frameworks, setFrameworks] = useState("");
+  const [databases, setDatabases] = useState("");
+  const [otherSkills, setOtherSkills] = useState("");
   const [talentsFound, setTalentsFound] = useState<TalentsResult>({
     talents: [],
     total: 0,
@@ -33,11 +40,11 @@ const SearchTalents: React.FC = () => {
   const [pageSize, setPageSize] = React.useState(10);
 
   const handleChangePageNumber = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
+    _: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number
   ) => {
     setPageNumber(newPage);
-    searchTalents(input, pageSize, newPage);
+    searchTalents();
   };
 
   const handleChangePageSize = (
@@ -46,35 +53,60 @@ const SearchTalents: React.FC = () => {
     const newSize = parseInt(event.target.value, 10);
     setPageSize(newSize);
     setPageNumber(0);
-    searchTalents(input, newSize, 1);
+    searchTalents();
   };
 
-  const searchTalents = useCallback(
-    (query: string, pageSize = 10, pageNumber = 1) => {
-      setIsLoading(true);
+  const searchTalents = useCallback(() => {
+    // if (
+    //   !freeText.length &&
+    //   !name.length &&
+    //   !email.length &&
+    //   !languages.length &&
+    //   !frameworks.length &&
+    //   !databases.length &&
+    //   !otherSkills.length
+    // )
+    //   return;
 
-      queryTalents(query, pageSize, pageNumber + 1)
-        .then((response: AxiosResponse) => {
-          const result = response.data;
-          setTalentsFound(result.data);
-        })
-        .catch((error: any) => {
-          const message = error.response.data.message;
-          console.error("Erro: ", message);
-        })
-        .finally(() => setIsLoading(false));
-    },
-    []
-  );
+    setIsLoading(true);
 
-  const submitSearch = (event: any) => {
-    event.preventDefault();
-    searchTalents(input);
-  };
+    const clampedPageNumber = pageNumber > 1 ? pageNumber : 1;
+
+    const query: TalentSearchQuery = {};
+
+    if (freeText.length) query.freeText = freeText.toLowerCase();
+    if (name.length) query.name = name.toLowerCase();
+    if (email.length) query.email = email.toLowerCase();
+    if (languages.length) query.languages = languages.toLowerCase();
+    if (frameworks.length) query.frameworks = frameworks.toLowerCase();
+    if (databases.length) query.databases = databases.toLowerCase();
+    if (otherSkills.length) query.otherSkills = otherSkills.toLowerCase();
+
+    queryTalents(query, pageSize, clampedPageNumber)
+      .then((response: AxiosResponse) => {
+        const result = response.data;
+        setTalentsFound(result.data);
+      })
+      .catch((error: any) => {
+        const message = error.response.data.message;
+        console.error("Erro: ", message);
+      })
+      .finally(() => setIsLoading(false));
+  }, [
+    databases,
+    email,
+    frameworks,
+    freeText,
+    languages,
+    name,
+    otherSkills,
+    pageNumber,
+    pageSize,
+  ]);
 
   useEffect(() => {
-    searchTalents("");
-  }, [searchTalents]);
+    searchTalents();
+  }, []);
 
   return (
     <Box
@@ -92,34 +124,84 @@ const SearchTalents: React.FC = () => {
         justifyContent="center"
         gap="16px"
       >
-        <form onSubmit={submitSearch}>
-          <TextField
-            fullWidth
-            label="Digite sua pesquisa"
-            value={input}
-            onChange={(event: any) => {
-              setInput(event.target.value);
-            }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={() => undefined}
-                    onMouseDown={(
-                      event: React.MouseEvent<HTMLButtonElement>
-                    ) => {
-                      event.preventDefault();
-                    }}
-                    edge="end"
-                  >
-                    <SearchIcon />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-        </form>
+        <Grid container spacing={2}>
+          <Grid xs={12}>
+            <TextField
+              fullWidth
+              label="Texto livre"
+              value={freeText}
+              onChange={(event: any) => {
+                setFreeText(event.target.value);
+              }}
+            />
+          </Grid>
+          <Grid xs={12} md={6}>
+            <TextField
+              fullWidth
+              label="Nome"
+              value={name}
+              onChange={(event: any) => {
+                setName(event.target.value);
+              }}
+            />
+          </Grid>
+          <Grid xs={12} md={6}>
+            <TextField
+              fullWidth
+              label="E-mail"
+              value={email}
+              onChange={(event: any) => {
+                setEmail(event.target.value);
+              }}
+            />
+          </Grid>
+          <Grid xs={12} md={6}>
+            <TextField
+              fullWidth
+              label="Linguagens de programação"
+              value={languages}
+              onChange={(event: any) => {
+                setLanguages(event.target.value);
+              }}
+            />
+          </Grid>
+          <Grid xs={12} md={6}>
+            <TextField
+              fullWidth
+              label="Frameworks"
+              value={frameworks}
+              onChange={(event: any) => {
+                setFrameworks(event.target.value);
+              }}
+            />
+          </Grid>
+          <Grid xs={12} md={6}>
+            <TextField
+              fullWidth
+              label="Bancos de dados"
+              value={databases}
+              onChange={(event: any) => {
+                setDatabases(event.target.value);
+              }}
+            />
+          </Grid>
+          <Grid xs={12} md={6}>
+            <TextField
+              fullWidth
+              label="Outras habilidades"
+              value={otherSkills}
+              onChange={(event: any) => {
+                setOtherSkills(event.target.value);
+              }}
+            />
+          </Grid>
+        </Grid>
+        <Box display="flex" justifyContent="flex-end">
+          <Button variant="contained" onClick={searchTalents}>
+            <Search />
+            <Box marginLeft="4px">Pesquisar</Box>
+          </Button>
+        </Box>
         <h2>Resultados</h2>
         <Box>
           {isLoading && (
@@ -138,7 +220,12 @@ const SearchTalents: React.FC = () => {
           {!isLoading && !!talentsFound.talents?.length && (
             <>
               <TablePagination
-                sx={{ border: 0, justifyContent: "flex-end", width: "100%" }}
+                sx={{
+                  border: 0,
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  width: "100%",
+                }}
                 rowsPerPageOptions={
                   !isMobile
                     ? [5, 10, 25, { label: "Mostrar tudo", value: -1 }]
@@ -170,7 +257,12 @@ const SearchTalents: React.FC = () => {
                 </Box>
               ))}
               <TablePagination
-                style={{ border: 0 }}
+                sx={{
+                  border: 0,
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  width: "100%",
+                }}
                 rowsPerPageOptions={[]}
                 colSpan={3}
                 count={talentsFound.total}
