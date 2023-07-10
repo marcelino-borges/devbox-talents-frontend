@@ -57,17 +57,6 @@ const SearchTalents: React.FC = () => {
   };
 
   const searchTalents = useCallback(() => {
-    // if (
-    //   !freeText.length &&
-    //   !name.length &&
-    //   !email.length &&
-    //   !languages.length &&
-    //   !frameworks.length &&
-    //   !databases.length &&
-    //   !otherSkills.length
-    // )
-    //   return;
-
     setIsLoading(true);
 
     const clampedPageNumber = pageNumber > 1 ? pageNumber : 1;
