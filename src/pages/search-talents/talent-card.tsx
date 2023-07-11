@@ -16,7 +16,7 @@ interface SkillsRowProps {
 const CardSearchTalent: React.FC<CardSearchTalentProps> = ({
   talent,
 }: CardSearchTalentProps) => {
-  const { _id, firstName, lastName, email } = talent;
+  const { firstName, lastName, email } = talent;
 
   const SkillsRow = ({ skills, label }: SkillsRowProps) => {
     if (!skills?.length) return null;
