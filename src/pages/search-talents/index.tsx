@@ -16,6 +16,8 @@ import { TalentSummary } from "./interfaces";
 import CardSearchTalent from "./talent-card";
 import { Search } from "@mui/icons-material";
 import { TalentSearchQuery } from "../../types";
+import Footer from "../../components/footer";
+import { MAX_APP_WIDTH } from "../../constants";
 
 interface TalentsResult {
   talents: TalentSummary[];
@@ -95,20 +97,24 @@ const SearchTalents: React.FC = () => {
 
   useEffect(() => {
     searchTalents();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <Box
+    <Stack
       id="welcome-root"
-      display="center"
+      display="flex"
       justifyContent="center"
-      pb="100px"
+      alignItems="center"
       pt="50px"
     >
+      <Box mb="32px">
+        <h2>Busca de talentos</h2>
+      </Box>
       <Stack
         id="welcome-fields"
         direction="column"
-        maxWidth="900px"
+        maxWidth={MAX_APP_WIDTH}
         width="100%"
         justifyContent="center"
         gap="16px"
@@ -275,7 +281,15 @@ const SearchTalents: React.FC = () => {
           )}
         </Box>
       </Stack>
-    </Box>
+      <Box
+        width="100%"
+        maxWidth={MAX_APP_WIDTH}
+        textAlign="left"
+        fontSize="0.8em"
+      >
+        <Footer />
+      </Box>
+    </Stack>
   );
 };
 

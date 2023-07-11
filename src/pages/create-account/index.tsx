@@ -40,6 +40,7 @@ import {
   TOKEN_STORAGE_KEY,
   FIREBASE_USER_STORAGE_KEY,
   TALENT_STORAGE_KEY,
+  MAX_APP_WIDTH,
 } from "../../constants";
 import {
   Education,
@@ -57,6 +58,8 @@ import { getStorage, setStorage } from "../../utils/storage";
 import { translateFirebaseError } from "../../utils/firebase";
 import JobCard from "../../components/job-card";
 import EducationCard from "../../components/education-card";
+import { ROUTING_PATH } from "../../routes/routes";
+import Footer from "../../components/footer";
 
 const EMPTY_EDUCATION: Education = {
   institution: "",
@@ -135,7 +138,7 @@ const Account: React.FC = () => {
   useEffect(() => {
     if (authId) {
       if (!getStorage(TOKEN_STORAGE_KEY)?.length) {
-        navigate("/");
+        navigate(ROUTING_PATH.LOGIN);
         return;
       }
       setIsEditing(true);
@@ -214,7 +217,7 @@ const Account: React.FC = () => {
 
         createTalent(newTalent)
           .then(() => {
-            navigate(`/profile/${user.uid}`);
+            navigate(`${ROUTING_PATH.PROFILE}/${user.uid}`);
           })
           .catch((error: any) => {
             const message = error.response.data.message;
@@ -260,7 +263,7 @@ const Account: React.FC = () => {
     updateTalent(talent, (talentUpdated: Talent) => {
       setIsLoading(false);
       setStorage(TALENT_STORAGE_KEY, JSON.stringify(talentUpdated));
-      navigate(`/profile/${personalData.authId}`);
+      navigate(`${ROUTING_PATH.PROFILE}/${personalData.authId}`);
     })
       .then()
       .catch((error: any) => {
@@ -803,17 +806,18 @@ const Account: React.FC = () => {
   };
 
   return (
-    <Box
+    <Stack
       id="welcome-root"
-      display="center"
+      direction="column"
       justifyContent="center"
+      alignItems="center"
       pb="100px"
       pt="50px"
     >
       <Stack
         id="welcome-fields"
         direction="column"
-        maxWidth="600px"
+        maxWidth="1140px"
         width="100%"
         justifyContent="center"
         gap="16px"
@@ -822,7 +826,7 @@ const Account: React.FC = () => {
           <h2>{isEditing ? "Editar conta" : "Criar conta"}</h2>
         </Box>
         {!isEditing && (
-          <Box fontSize="0.8em" marginBottom="32px">
+          <Box fontSize="0.8em" marginBottom="32px" textAlign="center">
             Cadastre-se no nosso banco de talentos para receber propostas para
             nossas próximas vagas.
           </Box>
@@ -1330,7 +1334,15 @@ const Account: React.FC = () => {
           </Box>
         )}
       </Stack>
-    </Box>
+      <Box
+        width="100%"
+        maxWidth={MAX_APP_WIDTH}
+        textAlign="left"
+        fontSize="0.8em"
+      >
+        <Footer />
+      </Box>
+    </Stack>
   );
 };
 

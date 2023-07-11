@@ -6,19 +6,25 @@ import Profile from "../pages/profile";
 import SearchTalents from "../pages/search-talents";
 import PrivateRoute from "./private-route";
 import AdminRoute from "./admin-route";
+import { ROUTING_PATH } from "./routes";
+import Home from "../pages/home";
 
 const AppRoutes: React.FC = () => {
   const router = createBrowserRouter([
     {
-      path: "/",
+      path: ROUTING_PATH.HOME,
+      element: <Home />,
+    },
+    {
+      path: ROUTING_PATH.LOGIN,
       element: <Login />,
     },
     {
-      path: "/register",
+      path: ROUTING_PATH.REGISTER,
       element: <Account />,
     },
     {
-      path: "/edit-account/:authId",
+      path: `${ROUTING_PATH.EDIT_ACCOUNT}/:authId`,
       element: (
         <PrivateRoute>
           <Account />
@@ -26,7 +32,7 @@ const AppRoutes: React.FC = () => {
       ),
     },
     {
-      path: "/profile/:authId",
+      path: `${ROUTING_PATH.PROFILE}/:authId`,
       element: (
         <PrivateRoute>
           <Profile />
@@ -34,7 +40,7 @@ const AppRoutes: React.FC = () => {
       ),
     },
     {
-      path: "/search",
+      path: ROUTING_PATH.SEARCH,
       element: (
         <AdminRoute>
           <SearchTalents />

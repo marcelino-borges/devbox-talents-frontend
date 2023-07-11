@@ -25,6 +25,9 @@ import {
 import { PRIMARY_COLOR } from "../../constants/colors";
 import { DataGroup } from "./style";
 import AvatarBlank from "../../components/avatar-blank";
+import { ROUTING_PATH } from "../../routes/routes";
+import Footer from "../../components/footer";
+import { MAX_APP_WIDTH } from "../../constants";
 
 interface DataRowProps {
   name: string;
@@ -105,16 +108,15 @@ const Profile: React.FC = () => {
           <Edit
             style={{ color: PRIMARY_COLOR, cursor: "pointer" }}
             onClick={() => {
-              navigate(`/edit-account/${profile.authId}`);
+              navigate(`${ROUTING_PATH.EDIT_ACCOUNT}/${profile.authId}`);
             }}
           />
         </Stack>
 
         {!!profile?.isAdmin && (
           <Box>
-            {" "}
             <Button
-              onClick={() => navigate("/search")}
+              onClick={() => navigate(ROUTING_PATH.SEARCH)}
               style={{ marginBottom: "32px" }}
               variant="contained"
             >
@@ -281,6 +283,9 @@ const Profile: React.FC = () => {
           )}
         </DataGroup>
       </Stack>
+      <Box width="100%" maxWidth={MAX_APP_WIDTH} textAlign="left">
+        <Footer />
+      </Box>
     </Stack>
   ) : (
     <Box

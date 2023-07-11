@@ -1,6 +1,7 @@
 export const TOKEN_STORAGE_KEY = "token";
 export const FIREBASE_USER_STORAGE_KEY = "user";
 export const TALENT_STORAGE_KEY = "user";
+export const MAX_APP_WIDTH = "1140px";
 
 export const LANGUAGES = [
   {

@@ -46,15 +46,15 @@ const NavbarTop: React.FC = () => {
           CONTATO
         </MenuLink>
         {isLoggedIn && (
-          <a
+          <MenuLink
             href="/"
-            style={{ color: "#000" }}
             onClick={() => {
               logout();
             }}
+            textAlign={isMobile ? "center" : undefined}
           >
             SAIR
-          </a>
+          </MenuLink>
         )}
       </Stack>
     );
@@ -72,7 +72,6 @@ const NavbarTop: React.FC = () => {
         overflowY: "hidden",
         borderBottom:
           isMobile && isMobileExpanded ? "1px solid #00000040" : undefined,
-        paddingBottom: isMobile ? "16px" : undefined,
       }}
     >
       <Stack
@@ -93,6 +92,8 @@ const NavbarTop: React.FC = () => {
           <Menu />
         ) : (
           <Box
+            display="flex"
+            alignItems="center"
             p="4px"
             borderRadius="5px"
             style={{ cursor: "pointer" }}

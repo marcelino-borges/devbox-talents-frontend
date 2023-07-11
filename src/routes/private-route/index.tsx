@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { FIREBASE_USER_STORAGE_KEY, TALENT_STORAGE_KEY } from "../../constants";
 import { useNavigate } from "react-router-dom";
 import { getStorage } from "../../utils/storage";
+import { ROUTING_PATH } from "../routes";
 
 interface PrivateRouteProps {
   children: JSX.Element;
@@ -17,7 +18,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
     const talent = getStorage(TALENT_STORAGE_KEY);
 
     if (!fireabaseUser || !talent) {
-      navigate("/");
+      navigate(ROUTING_PATH.LOGIN);
     }
   }, [navigate]);
 

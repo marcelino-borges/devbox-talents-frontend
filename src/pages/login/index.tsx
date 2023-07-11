@@ -14,9 +14,15 @@ import { useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { translateFirebaseError } from "../../utils/firebase";
 import { getStorage, setStorage } from "../../utils/storage";
-import { FIREBASE_USER_STORAGE_KEY, TALENT_STORAGE_KEY } from "../../constants";
+import {
+  FIREBASE_USER_STORAGE_KEY,
+  MAX_APP_WIDTH,
+  TALENT_STORAGE_KEY,
+} from "../../constants";
 import { Talent, GetTalentQuery } from "../../types";
 import { getTalent } from "../../services/talents";
+import { ROUTING_PATH } from "../../routes/routes";
+import Footer from "../../components/footer";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -27,7 +33,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
 
   const navigateToProfile = (authId: string) => {
-    navigate(`/profile/${authId}`);
+    navigate(`${ROUTING_PATH.PROFILE}/${authId}`);
   };
 
   const login = (event: any) => {
@@ -69,13 +75,19 @@ const Login: React.FC = () => {
       const user = JSON.parse(storedUser) as User;
 
       if (user) {
-        navigate(`/profile/${user.uid}`);
+        navigate(`${ROUTING_PATH.PROFILE}/${user.uid}`);
       }
     }
   }, [navigate]);
 
   return (
-    <Box id="login-root" display="center" justifyContent="center">
+    <Stack
+      id="login-root"
+      display="flex"
+      direction="column"
+      justifyContent="center"
+      alignItems="center"
+    >
       <Stack
         id="login-fields"
         direction="column"
@@ -166,7 +178,15 @@ const Login: React.FC = () => {
           Não tem conta? <a href="/register">Crie aqui</a>
         </Box>
       </Stack>
-    </Box>
+      <Box
+        width="100%"
+        maxWidth={MAX_APP_WIDTH}
+        textAlign="left"
+        fontSize="0.8em"
+      >
+        <Footer />
+      </Box>
+    </Stack>
   );
 };
 

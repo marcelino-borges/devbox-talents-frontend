@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { getStorage } from "../../utils/storage";
 import { Talent } from "../../types";
 import { User } from "firebase/auth";
+import { ROUTING_PATH } from "../routes";
 
 interface PrivateRouteProps {
   children: JSX.Element;
@@ -23,10 +24,10 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
       const talent = JSON.parse(talentString) as Talent;
 
       if (!talent.isAdmin) {
-        navigate(`/profile/${fireabaseUser.uid}`);
+        navigate(`${ROUTING_PATH.PROFILE}/${fireabaseUser.uid}`);
       }
     } else {
-      navigate("/");
+      navigate(ROUTING_PATH.LOGIN);
     }
   }, [navigate]);
 
