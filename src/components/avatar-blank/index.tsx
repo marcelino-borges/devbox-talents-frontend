@@ -1,12 +1,29 @@
 import React from "react";
-import { UserAvatar } from "./style";
 import { Person } from "@mui/icons-material";
+import { Avatar } from "@mui/material";
 
-const AvatarBlank: React.FC = () => {
+interface AvatarBlankProps {
+  size: number;
+}
+
+const AvatarBlank: React.FC<AvatarBlankProps> = ({
+  size = 150,
+}: AvatarBlankProps) => {
   return (
-    <UserAvatar>
+    <Avatar
+      sx={{
+        bgcolor: "#f5f5f5",
+        color: "#00000050",
+        width: `${size}px`,
+        height: `${size}px`,
+        svg: {
+          width: `${size * 0.6}px`,
+          height: `${size * 0.6}px`,
+        },
+      }}
+    >
       <Person />
-    </UserAvatar>
+    </Avatar>
   );
 };
 

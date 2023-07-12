@@ -1,6 +1,7 @@
-import { Box, styled } from "@mui/material";
+import { styled } from "@mui/material";
+import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 
-export const DataGroup = styled(Box)<any>(({ direction }: any) => ({
+export const DataGroup = styled(Grid2)<any>(({ direction }: any) => ({
   display: "flex",
   flexDirection: direction,
   padding: "32px",

@@ -5,7 +5,7 @@ import {
   Stack,
   useMediaQuery,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { format } from "date-fns";
 import {
@@ -28,6 +28,7 @@ import AvatarBlank from "../../components/avatar-blank";
 import { ROUTING_PATH } from "../../routes/routes";
 import Footer from "../../components/footer";
 import { MAX_APP_WIDTH } from "../../constants";
+import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 
 interface DataRowProps {
   name: string;
@@ -38,7 +39,9 @@ const Profile: React.FC = () => {
   const { authId } = useParams();
   const [profile, setProfile] = useState<Talent>();
   const navigate = useNavigate();
-  const isDesktop = useMediaQuery("(min-width: 992px)");
+  const isDesktop = useMediaQuery("(min-width: 900px)");
+  const avatarRef = useRef<any>(null);
+  const [avatarSize, setAvatarSize] = useState();
 
   useEffect(() => {
     if (authId) {
@@ -58,6 +61,18 @@ const Profile: React.FC = () => {
       );
     }
   }, [authId]);
+
+  useEffect(() => {
+    const onResize = () => {
+      setAvatarSize(avatarRef.current.offsetWidth);
+    };
+
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      window.removeEventListener("resize", onResize);
+    };
+  }, [avatarRef]);
 
   const DataField = ({ name, value }: DataRowProps) => {
     return (
@@ -124,48 +139,61 @@ const Profile: React.FC = () => {
             </Button>
           </Box>
         )}
-        <DataGroup direction="row">
-          <Box pr="32px" height="100%">
-            <AvatarBlank />
-          </Box>
-          <Stack
-            direction="column"
-            pl="32px"
-            gap="32px"
-            flexGrow={1}
-            borderLeft="1px solid #f5f5f5"
+        <DataGroup container>
+          <Grid2
+            xs={12}
+            md={2}
+            display="flex"
+            pl={isDesktop ? undefined : "32px"}
+            pr="32px"
+            justifyContent={isDesktop ? "flex-start" : "center"}
+            alignItems="center"
+            width={isDesktop ? undefined : "100%"}
+            mb={isDesktop ? undefined : "50px"}
           >
-            {!!profile.isAdmin && (
-              <Box color={PRIMARY_COLOR} fontWeight={600}>
-                Administrador
-              </Box>
-            )}
-            <Section title="Dados pessoais">
-              <DataField name="Nome" value={profile?.firstName || ""} />
-              <DataField name="Sobrenome" value={profile?.lastName || ""} />
-              <DataField name="E-mail" value={profile?.email || ""} />
-            </Section>
-            {profile.languages && (
-              <Section title="Linguagens">
-                <Box>{joinSkills(profile.languages)}</Box>
+            <Box ref={avatarRef}>
+              <AvatarBlank size={isDesktop ? avatarSize || 150 : 100} />
+            </Box>
+          </Grid2>
+          <Grid2 xs={12} md={10}>
+            <Stack
+              direction="column"
+              pl="32px"
+              gap="32px"
+              borderLeft={isDesktop ? "1px solid #f5f5f5" : undefined}
+            >
+              {!!profile.isAdmin && (
+                <Box color={PRIMARY_COLOR} fontWeight={600}>
+                  Administrador
+                </Box>
+              )}
+              <Section title="Dados pessoais">
+                <DataField name="Nome" value={profile?.firstName || ""} />
+                <DataField name="Sobrenome" value={profile?.lastName || ""} />
+                <DataField name="E-mail" value={profile?.email || ""} />
               </Section>
-            )}
-            {profile.frameworks && (
-              <Section title="Frameworks">
-                <Box>{joinSkills(profile.frameworks)}</Box>
-              </Section>
-            )}
-            {profile.databases && (
-              <Section title="Bancos de dados">
-                <Box>{joinSkills(profile.databases)}</Box>
-              </Section>
-            )}
-            {profile.otherSkills && (
-              <Section title="Outras habilidades">
-                <Box>{joinSkills(profile.otherSkills)}</Box>
-              </Section>
-            )}
-          </Stack>
+              {profile.languages && (
+                <Section title="Linguagens">
+                  <Box>{joinSkills(profile.languages)}</Box>
+                </Section>
+              )}
+              {profile.frameworks && (
+                <Section title="Frameworks">
+                  <Box>{joinSkills(profile.frameworks)}</Box>
+                </Section>
+              )}
+              {profile.databases && (
+                <Section title="Bancos de dados">
+                  <Box>{joinSkills(profile.databases)}</Box>
+                </Section>
+              )}
+              {profile.otherSkills && (
+                <Section title="Outras habilidades">
+                  <Box>{joinSkills(profile.otherSkills)}</Box>
+                </Section>
+              )}
+            </Stack>
+          </Grid2>
         </DataGroup>
 
         <DataGroup direction="column">
@@ -174,7 +202,12 @@ const Profile: React.FC = () => {
           {profile?.jobHistory ? (
             <Stack direction="column" gap="8px" pt="8px">
               {profile?.jobHistory.map((job: Job) => (
-                <Stack direction="column">
+                <Stack
+                  direction="column"
+                  key={
+                    job.companyName + "-" + job.roleName + "-" + job.startDate
+                  }
+                >
                   <Box fontSize="1.2em" color={PRIMARY_COLOR} fontWeight={800}>
                     📌 {job.companyName}
                   </Box>
@@ -223,7 +256,7 @@ const Profile: React.FC = () => {
           {profile?.educationHistory ? (
             <Stack direction="column" gap="8px" pt="8px">
               {profile?.educationHistory.map((education: Education) => (
-                <Stack direction="column">
+                <Stack direction="column" key={education.course}>
                   <Box fontSize="1.2em" color={PRIMARY_COLOR} fontWeight={800}>
                     📌 {education.course}
                   </Box>

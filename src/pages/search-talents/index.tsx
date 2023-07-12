@@ -13,7 +13,7 @@ import {
 import { queryTalents } from "../../services/talents";
 import PaginationActions from "./table-pagination-actions";
 import { TalentSummary } from "./interfaces";
-import CardSearchTalent from "./talent-card";
+import CardSearchTalent from "./card-search-talent";
 import { Search } from "@mui/icons-material";
 import { TalentSearchQuery } from "../../types";
 import Footer from "../../components/footer";

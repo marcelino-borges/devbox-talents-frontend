@@ -1,16 +1,31 @@
 import { Box, Stack, useMediaQuery, useTheme } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import { IMAGES } from "../../assets/imgs";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import { ROUTING_PATH } from "../../routes/routes";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../components/footer";
-import { MAX_APP_WIDTH } from "../../constants";
+import { FIREBASE_USER_STORAGE_KEY, MAX_APP_WIDTH } from "../../constants";
+import { getStorage } from "../../utils/storage";
+import { User } from "firebase/auth";
 
 const Home: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery("(max-width: 770px)");
   const isSmallerThanMD = useMediaQuery(theme.breakpoints.down("md"));
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUser = getStorage(FIREBASE_USER_STORAGE_KEY);
+
+    if (storedUser) {
+      const user = JSON.parse(storedUser) as User;
+
+      if (user) {
+        navigate(`${ROUTING_PATH.PROFILE}/${user.uid}`);
+      }
+    }
+  }, [navigate]);
 
   return (
     <Stack

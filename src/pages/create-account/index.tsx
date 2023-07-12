@@ -1330,7 +1330,7 @@ const Account: React.FC = () => {
         </Box>
         {!isEditing && (
           <Box textAlign="center" mt="16px">
-            Já tem conta? <Link to={"/"}>Entre aqui</Link>
+            Já tem conta? <Link to={"/login"}>Entre aqui</Link>
           </Box>
         )}
       </Stack>

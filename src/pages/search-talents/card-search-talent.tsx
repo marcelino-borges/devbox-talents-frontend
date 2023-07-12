@@ -23,7 +23,13 @@ const CardSearchTalent: React.FC<CardSearchTalentProps> = ({
 
     return (
       skills?.length && (
-        <Stack direction="row" gap="12px" fontSize="0.9em">
+        <Stack
+          direction="row"
+          gap="12px"
+          fontSize="0.9em"
+          alignItems="center"
+          flexWrap="wrap"
+        >
           <Box fontWeight={600}>{label}:</Box>
           {skills.map((language: Skill) => (
             <Box
@@ -32,6 +38,7 @@ const CardSearchTalent: React.FC<CardSearchTalentProps> = ({
               bgcolor="rgba(0, 0, 0, 0.03)"
               borderRadius="5px"
               fontSize="0.8em"
+              height="min-content"
             >
               {language.label}
             </Box>
