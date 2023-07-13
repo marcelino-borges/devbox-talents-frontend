@@ -39,6 +39,7 @@ const Profile: React.FC = () => {
   const [profile, setProfile] = useState<Talent>();
   const navigate = useNavigate();
   const isDesktop = useMediaQuery("(min-width: 900px)");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (authId) {
@@ -54,6 +55,7 @@ const Profile: React.FC = () => {
         (error: any) => {
           const message = error.response.data.message;
           console.error("Erro: ", message);
+          setError(message || "Tivemos um erro.");
         }
       );
     }
@@ -85,6 +87,18 @@ const Profile: React.FC = () => {
       </Stack>
     );
   };
+
+  if (error.length) {
+    <Stack
+      direction="column"
+      alignItems="center"
+      pt="50px"
+      pb="100px"
+      fontSize="0.8em"
+    >
+      {error}
+    </Stack>;
+  }
 
   return profile ? (
     <Stack
