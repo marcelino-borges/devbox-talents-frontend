@@ -126,12 +126,7 @@ const Profile: React.FC = () => {
         )}
         <DataGroup container>
           <Grid2 xs={12} md={10}>
-            <Stack
-              direction="column"
-              pl="32px"
-              gap="32px"
-              borderLeft={isDesktop ? "1px solid #f5f5f5" : undefined}
-            >
+            <Stack direction="column" pl="32px" gap="32px">
               {!!profile.isAdmin && (
                 <Box color={PRIMARY_COLOR} fontWeight={600}>
                   Administrador
