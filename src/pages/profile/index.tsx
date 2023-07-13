@@ -5,7 +5,7 @@ import {
   Stack,
   useMediaQuery,
 } from "@mui/material";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { format } from "date-fns";
 import {
@@ -24,7 +24,6 @@ import {
 } from "../../utils";
 import { PRIMARY_COLOR } from "../../constants/colors";
 import { DataGroup } from "./style";
-import AvatarBlank from "../../components/avatar-blank";
 import { ROUTING_PATH } from "../../routes/routes";
 import Footer from "../../components/footer";
 import { MAX_APP_WIDTH } from "../../constants";
@@ -40,8 +39,6 @@ const Profile: React.FC = () => {
   const [profile, setProfile] = useState<Talent>();
   const navigate = useNavigate();
   const isDesktop = useMediaQuery("(min-width: 900px)");
-  const avatarRef = useRef<any>(null);
-  const [avatarSize, setAvatarSize] = useState();
 
   useEffect(() => {
     if (authId) {
@@ -61,18 +58,6 @@ const Profile: React.FC = () => {
       );
     }
   }, [authId]);
-
-  useEffect(() => {
-    const onResize = () => {
-      setAvatarSize(avatarRef.current.offsetWidth);
-    };
-
-    window.addEventListener("resize", onResize);
-
-    return () => {
-      window.removeEventListener("resize", onResize);
-    };
-  }, [avatarRef]);
 
   const DataField = ({ name, value }: DataRowProps) => {
     return (
@@ -140,21 +125,6 @@ const Profile: React.FC = () => {
           </Box>
         )}
         <DataGroup container>
-          <Grid2
-            xs={12}
-            md={2}
-            display="flex"
-            pl={isDesktop ? undefined : "32px"}
-            pr="32px"
-            justifyContent={isDesktop ? "flex-start" : "center"}
-            alignItems="center"
-            width={isDesktop ? undefined : "100%"}
-            mb={isDesktop ? undefined : "50px"}
-          >
-            <Box ref={avatarRef}>
-              <AvatarBlank size={isDesktop ? avatarSize || 150 : 100} />
-            </Box>
-          </Grid2>
           <Grid2 xs={12} md={10}>
             <Stack
               direction="column"
