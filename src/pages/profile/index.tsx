@@ -1,3 +1,6 @@
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { format } from "date-fns";
 import {
   Box,
   Button,
@@ -5,9 +8,6 @@ import {
   Stack,
   useMediaQuery,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { format } from "date-fns";
 import {
   Edit,
   GitHub,
@@ -15,6 +15,7 @@ import {
   Link as LinkIcon,
   LinkedIn,
 } from "@mui/icons-material";
+import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import { getTalent } from "../../services/talents";
 import { Education, Job, Talent } from "../../types";
 import {
@@ -23,11 +24,10 @@ import {
   translateLocationType,
 } from "../../utils";
 import { PRIMARY_COLOR } from "../../constants/colors";
-import { DataGroup } from "./style";
 import { ROUTING_PATH } from "../../routes/routes";
 import Footer from "../../components/footer";
 import { MAX_APP_WIDTH } from "../../constants";
-import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
+import { DataGroup } from "./style";
 
 interface DataRowProps {
   name: string;

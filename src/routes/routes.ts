@@ -3,6 +3,6 @@ export const enum ROUTING_PATH {
   LOGIN = "/login",
   REGISTER = "/register",
   EDIT_ACCOUNT = "/edit-account",
-  PROFILE = "/profile/:authId",
+  PROFILE = "/profile",
   SEARCH = "/search",
 }
