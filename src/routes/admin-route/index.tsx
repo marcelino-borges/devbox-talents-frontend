@@ -6,6 +6,7 @@ import { Talent } from "../../types";
 import { User } from "firebase/auth";
 import { ROUTING_PATH } from "../routes";
 
+// Private route
 interface PrivateRouteProps {
   children: JSX.Element;
 }
