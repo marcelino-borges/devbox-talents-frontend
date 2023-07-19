@@ -27,6 +27,7 @@ interface TalentsResult {
 const SearchTalents: React.FC = () => {
   const isMobile = useMediaQuery("(max-width: 547px)");
   const [freeText, setFreeText] = useState("");
+  const [characteristics, setCharacteristics] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [languages, setLanguages] = useState("");
@@ -127,6 +128,16 @@ const SearchTalents: React.FC = () => {
               value={freeText}
               onChange={(event: any) => {
                 setFreeText(event.target.value);
+              }}
+            />
+          </Grid>
+          <Grid xs={12}>
+            <TextField
+              fullWidth
+              label="Características"
+              value={characteristics}
+              onChange={(event: any) => {
+                setCharacteristics(event.target.value);
               }}
             />
           </Grid>
