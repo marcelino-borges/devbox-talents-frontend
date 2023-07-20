@@ -11,12 +11,11 @@ const NavbarTop: React.FC = () => {
   const isMobile = useMediaQuery("(max-width: 770px)");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
+  const token = getStorage(TOKEN_STORAGE_KEY);
 
   useEffect(() => {
-    const token = getStorage(TOKEN_STORAGE_KEY);
-
     setIsLoggedIn(!!token?.length);
-  }, []);
+  }, [token]);
 
   const Menu = () => {
     return (
