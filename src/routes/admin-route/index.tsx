@@ -6,13 +6,13 @@ import { Talent } from "../../types";
 import { User } from "firebase/auth";
 import { ROUTING_PATH } from "../routes";
 
-interface PrivateRouteProps {
+interface AdminRouteProps {
   children: JSX.Element;
 }
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({
+const AdminRoute: React.FC<AdminRouteProps> = ({
   children,
-}: PrivateRouteProps) => {
+}: AdminRouteProps) => {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,4 +34,4 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
   return <>{children}</>;
 };
 
-export default PrivateRoute;
+export default AdminRoute;
