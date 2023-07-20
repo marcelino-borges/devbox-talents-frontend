@@ -5,6 +5,7 @@ import {
   Button,
   CircularProgress,
   Unstable_Grid2 as Grid,
+  InputAdornment,
   Stack,
   TablePagination,
   TextField,
@@ -14,7 +15,7 @@ import { queryTalents } from "../../services/talents";
 import PaginationActions from "./table-pagination-actions";
 import { TalentSummary } from "./interfaces";
 import CardSearchTalent from "./card-search-talent";
-import { Search } from "@mui/icons-material";
+import { AccountCircle, Search } from "@mui/icons-material";
 import { TalentSearchQuery } from "../../types";
 import Footer from "../../components/footer";
 import { MAX_APP_WIDTH } from "../../constants";
@@ -39,8 +40,9 @@ const SearchTalents: React.FC = () => {
     total: 0,
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [pageNumber, setPageNumber] = React.useState(0);
-  const [pageSize, setPageSize] = React.useState(10);
+  const [pageNumber, setPageNumber] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [isNameSelected, setIsNameSelected] = useState(false);
 
   const handleChangePageNumber = (
     _: React.MouseEvent<HTMLButtonElement> | null,
@@ -146,6 +148,19 @@ const SearchTalents: React.FC = () => {
               fullWidth
               label="Nome"
               value={name}
+              InputProps={
+                isNameSelected
+                  ? {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <AccountCircle />
+                        </InputAdornment>
+                      ),
+                    }
+                  : undefined
+              }
+              onFocus={() => setIsNameSelected(true)}
+              onBlur={() => setIsNameSelected(false)}
               onChange={(event: any) => {
                 setName(event.target.value);
               }}
