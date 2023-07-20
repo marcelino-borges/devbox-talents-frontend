@@ -49,7 +49,7 @@ const Profile: React.FC = () => {
           if (talent) {
             setProfile(talent);
           } else {
-            console.error("Erro: Não conseguimos buscar o talento");
+            console.error("Erro: Não conseguimos buscar o perfil");
           }
         },
         (error: any) => {
@@ -140,7 +140,7 @@ const Profile: React.FC = () => {
         )}
         <DataGroup container>
           <Grid2 xs={12} md={10}>
-            <Stack direction="column" pl="32px" gap="32px">
+            <Stack direction="column" gap="32px">
               {!!profile.isAdmin && (
                 <Box color={PRIMARY_COLOR} fontWeight={600}>
                   Administrador
