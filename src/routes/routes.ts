@@ -5,4 +5,5 @@ export const enum ROUTING_PATH {
   EDIT_ACCOUNT = "/edit-account",
   PROFILE = "/profile",
   SEARCH = "/search",
+  TERMS = "/terms-of-use",
 }
