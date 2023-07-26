@@ -9,6 +9,7 @@ import AdminRoute from "./admin-route";
 import { ROUTING_PATH } from "./routes";
 import Home from "../pages/home";
 import TermsOfUse from "../pages/terms-of-use";
+import PrivacyPolicy from "../pages/privacy-policy";
 
 const AppRoutes: React.FC = () => {
   const router = createBrowserRouter([
@@ -51,6 +52,10 @@ const AppRoutes: React.FC = () => {
     {
       path: ROUTING_PATH.TERMS,
       element: <TermsOfUse />,
+    },
+    {
+      path: ROUTING_PATH.PRIVACY_POLICY,
+      element: <PrivacyPolicy />,
     },
   ]);
 
