@@ -1308,7 +1308,8 @@ const Account: React.FC = () => {
         <Box>
           Ao clicar no botão Criar Conta, aceito os{" "}
           <Link to={"/terms-of-use"}>Termos de Uso</Link> e as{" "}
-          <Link to={"/privacy-policy"}>Políticas de Privacidade</Link> da Devbox
+          <Link to={"/privacy-policy"}>Políticas de Privacidade</Link> da
+          Devbox.
         </Box>
         <Box mt="16px">
           <Button
