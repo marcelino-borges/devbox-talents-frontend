@@ -22,7 +22,7 @@ const App: React.FC = () => {
     setShowSnackbar(false);
   };
 
-  const handleDecline = () => {
+  const handleRefused = () => {
     setStorage(COOKIES_CONSENT_STORAGE_KEY, false.toString());
     setShowSnackbar(false);
   };
@@ -46,7 +46,7 @@ const App: React.FC = () => {
             <Button variant="contained" onClick={handleAccept}>
               Aceitar
             </Button>
-            <Button variant="contained" onClick={handleDecline}>
+            <Button variant="contained" onClick={handleRefused}>
               Recusar
             </Button>
           </Stack>
