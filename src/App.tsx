@@ -3,7 +3,6 @@ import { Stack } from "@mui/material";
 import NavbarTop from "./components/navbar-top";
 import { initializeFirebaseApp } from "./config/firebase";
 import AppRoutes from "./routes";
-
 import CookiesAcceptMessage from "./components/cookies-accept-message";
 
 const App: React.FC = () => {

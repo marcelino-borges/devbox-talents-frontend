@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { initializeFirebaseApp } from "../../config/firebase";
 import { COOKIES_CONSENT_STORAGE_KEY } from "../../constants";
 import { getStorage, setStorage } from "../../utils/storage";
 import { Button, Snackbar, SnackbarOrigin, Stack } from "@mui/material";
@@ -9,7 +8,6 @@ const CookiesAcceptMessage: React.FC = () => {
   const [showSnackbar, setShowSnackbar] = useState(false);
 
   useEffect(() => {
-    initializeFirebaseApp();
     const consent = getStorage(COOKIES_CONSENT_STORAGE_KEY);
     if (!consent) {
       setShowSnackbar(true);
@@ -17,12 +15,12 @@ const CookiesAcceptMessage: React.FC = () => {
   }, []);
 
   const handleAccept = () => {
-    setStorage(COOKIES_CONSENT_STORAGE_KEY, true.toString());
+    setStorage(COOKIES_CONSENT_STORAGE_KEY, "true");
     setShowSnackbar(false);
   };
 
   const handleRefused = () => {
-    setStorage(COOKIES_CONSENT_STORAGE_KEY, false.toString());
+    setStorage(COOKIES_CONSENT_STORAGE_KEY, "false");
     setShowSnackbar(false);
   };
 
