@@ -38,8 +38,8 @@ const SearchTalents: React.FC = () => {
     total: 0,
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [pageNumber, setPageNumber] = React.useState(0);
-  const [pageSize, setPageSize] = React.useState(10);
+  const [pageNumber, setPageNumber] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
 
   const handleChangePageNumber = (
     _: React.MouseEvent<HTMLButtonElement> | null,
