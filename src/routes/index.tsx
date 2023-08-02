@@ -10,6 +10,7 @@ import { ROUTING_PATH } from "./routes";
 import Home from "../pages/home";
 import TermsOfUse from "../pages/terms-of-use";
 import PrivacyPolicy from "../pages/privacy-policy";
+import CreateJobs from "../pages/create-jobs";
 
 const AppRoutes: React.FC = () => {
   const router = createBrowserRouter([
@@ -56,6 +57,10 @@ const AppRoutes: React.FC = () => {
     {
       path: ROUTING_PATH.PRIVACY_POLICY,
       element: <PrivacyPolicy />,
+    },
+    {
+      path: ROUTING_PATH.REGISTER_JOBS,
+      element: <CreateJobs />,
     },
   ]);
 

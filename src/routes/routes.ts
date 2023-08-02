@@ -7,4 +7,5 @@ export const enum ROUTING_PATH {
   SEARCH = "/search",
   TERMS = "/terms-of-use",
   PRIVACY_POLICY = "/privacy-policy",
+  REGISTER_JOBS = "/register-jobs",
 }
