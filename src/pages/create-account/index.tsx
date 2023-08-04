@@ -45,11 +45,11 @@ import {
 import {
   Education,
   EmploymentType,
-  Job,
+  JobExperience,
   LocationType,
   Skill,
   Talent,
-} from "../../types";
+} from "../../models/talents";
 import { PRIMARY_COLOR } from "../../constants/colors";
 import { translateEmploymentType, translateLocationType } from "../../utils";
 import { createTalent, getTalent, updateTalent } from "../../services/talents";
@@ -68,7 +68,7 @@ const EMPTY_EDUCATION: Education = {
   end: new Date(),
 };
 
-const EMPTY_PROFESSION: Job = {
+const EMPTY_PROFESSION: JobExperience = {
   companyName: "",
   roleName: "",
   employmentType: EmploymentType.FULL_TIME,
@@ -119,7 +119,7 @@ const Account: React.FC = () => {
   const [showEducationDialog, setShowEducationDialog] = useState(false);
   const [addedEducations, setAddedEducations] = useState<Education[]>([]);
   const [showJobDialog, setShowJobDialog] = useState(false);
-  const [addedJobs, setAddedJobs] = useState<Job[]>([]);
+  const [addedJobs, setAddedJobs] = useState<JobExperience[]>([]);
   const [addedOtherSkills, setAddedOtherSkills] = useState<Skill[]>([]);
   const [otherSkillsToAdd, setOtherSkillsToAdd] = useState<Skill>();
   const [social, setSocial] =
@@ -362,9 +362,9 @@ const Account: React.FC = () => {
     setAddedEducations(filteredEducations);
   };
 
-  const deleteJob = (job: Job) => {
+  const deleteJob = (job: JobExperience) => {
     const filteredJobs = addedJobs.filter(
-      (existingJob: Job) =>
+      (existingJob: JobExperience) =>
         job.companyName !== existingJob.companyName &&
         job.roleName !== existingJob.roleName &&
         job.startDate !== existingJob.startDate
@@ -525,7 +525,7 @@ const Account: React.FC = () => {
   };
 
   const JobDialog = () => {
-    const [jobToAdd, setJobToAdd] = useState<Job>(EMPTY_PROFESSION);
+    const [jobToAdd, setJobToAdd] = useState<JobExperience>(EMPTY_PROFESSION);
     const [addedJobSkills, setAddedJobSkills] = useState<Skill[]>([]);
     const [jobSkillToAdd, setJobSkillToAdd] = useState<Skill>();
 
@@ -545,7 +545,7 @@ const Account: React.FC = () => {
         jobToAdd.description?.length &&
         jobToAdd.roleName?.length
       ) {
-        const updated: Job = {
+        const updated: JobExperience = {
           ...jobToAdd,
           skills: addedJobSkills,
         };
@@ -1212,7 +1212,7 @@ const Account: React.FC = () => {
         </Stack>
         {!!addedJobs.length && (
           <Stack direction="column" gap="8px">
-            {addedJobs.map((job: Job) => {
+            {addedJobs.map((job: JobExperience) => {
               return (
                 <JobCard
                   key={`${job.companyName}-${job.roleName}-${job.startDate}`}

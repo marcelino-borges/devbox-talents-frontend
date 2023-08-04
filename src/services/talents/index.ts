@@ -5,7 +5,7 @@ import {
   Talent,
   GetTalentQuery,
   TalentSearchQuery,
-} from "../../types";
+} from "../../models/talents";
 
 export const queryTalents = async (
   query: TalentSearchQuery,

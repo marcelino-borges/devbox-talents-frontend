@@ -9,7 +9,7 @@ export interface Talent {
   frameworks?: Skill[];
   databases?: Skill[];
   otherSkills?: Skill[];
-  jobHistory?: Job[];
+  jobHistory?: JobExperience[];
   educationHistory?: Education[];
   social: {
     personalWebsite?: string;
@@ -21,7 +21,7 @@ export interface Talent {
   updatedAt?: Date;
 }
 
-export interface Job {
+export interface JobExperience {
   companyName: string;
   roleName: string;
   employmentType: EmploymentType;

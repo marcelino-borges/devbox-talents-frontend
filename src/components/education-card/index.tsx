@@ -1,5 +1,5 @@
 import React from "react";
-import { Education } from "../../types";
+import { Education } from "../../models/talents";
 import { Box, IconButton, Stack } from "@mui/material";
 import { format } from "date-fns";
 import { Delete } from "@mui/icons-material";

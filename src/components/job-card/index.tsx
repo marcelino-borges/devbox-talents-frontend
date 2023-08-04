@@ -1,5 +1,5 @@
 import React from "react";
-import { Job } from "../../types";
+import { JobExperience } from "../../models/talents";
 import { Box, IconButton, Stack } from "@mui/material";
 import {
   joinSkills,
@@ -10,8 +10,8 @@ import { format } from "date-fns";
 import { Delete } from "@mui/icons-material";
 
 interface JobCardProps {
-  job: Job;
-  deleteJob?: (job: Job) => void;
+  job: JobExperience;
+  deleteJob?: (job: JobExperience) => void;
 }
 
 const JobCard: React.FC<JobCardProps> = ({ job, deleteJob }: JobCardProps) => {

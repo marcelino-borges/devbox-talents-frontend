@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { FIREBASE_USER_STORAGE_KEY, TALENT_STORAGE_KEY } from "../../constants";
 import { useNavigate } from "react-router-dom";
 import { getStorage } from "../../utils/storage";
-import { Talent } from "../../types";
+import { Talent } from "../../models/talents";
 import { User } from "firebase/auth";
 import { ROUTING_PATH } from "../routes";
 

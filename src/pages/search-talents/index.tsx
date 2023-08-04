@@ -15,7 +15,7 @@ import PaginationActions from "./table-pagination-actions";
 import { TalentSummary } from "./interfaces";
 import CardSearchTalent from "./card-search-talent";
 import { Search } from "@mui/icons-material";
-import { TalentSearchQuery } from "../../types";
+import { TalentSearchQuery } from "../../models/talents";
 import Footer from "../../components/footer";
 import { MAX_APP_WIDTH } from "../../constants";
 

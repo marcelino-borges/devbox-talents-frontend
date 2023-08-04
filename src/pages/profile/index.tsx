@@ -17,7 +17,7 @@ import {
 } from "@mui/icons-material";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import { getTalent } from "../../services/talents";
-import { Education, Job, Talent } from "../../types";
+import { Education, JobExperience, Talent } from "../../models/talents";
 import {
   joinSkills,
   translateEmploymentType,
@@ -180,7 +180,7 @@ const Profile: React.FC = () => {
           <Box height="16px" />
           {profile?.jobHistory ? (
             <Stack direction="column" gap="8px" pt="8px">
-              {profile?.jobHistory.map((job: Job) => (
+              {profile?.jobHistory.map((job: JobExperience) => (
                 <Stack
                   direction="column"
                   key={

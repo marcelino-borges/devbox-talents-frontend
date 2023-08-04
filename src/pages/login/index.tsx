@@ -19,7 +19,7 @@ import {
   MAX_APP_WIDTH,
   TALENT_STORAGE_KEY,
 } from "../../constants";
-import { Talent, GetTalentQuery } from "../../types";
+import { Talent, GetTalentQuery } from "../../models/talents";
 import { getTalent } from "../../services/talents";
 import { ROUTING_PATH } from "../../routes/routes";
 import Footer from "../../components/footer";

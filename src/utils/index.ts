@@ -1,4 +1,4 @@
-import { EmploymentType, LocationType, Skill } from "../types";
+import { EmploymentType, LocationType, Skill } from "../models/talents";
 
 export const translateEmploymentType = (type: EmploymentType) => {
   switch (type) {

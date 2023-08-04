@@ -1,4 +1,4 @@
-import { Skill } from "../../types";
+import { Skill } from "../../models/talents";
 
 export interface TalentSummary {
   _id: string;

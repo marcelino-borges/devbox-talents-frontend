@@ -1,7 +1,7 @@
 import { Box, Stack } from "@mui/material";
 import React from "react";
 import { TalentSummary } from "./interfaces";
-import { Skill } from "../../types";
+import { Skill } from "../../models/talents";
 import { PRIMARY_COLOR } from "../../constants/colors";
 
 interface CardSearchTalentProps {
