@@ -7,6 +7,7 @@ import {
   SelectChangeEvent,
   Stack,
   TextField,
+  useMediaQuery,
 } from "@mui/material";
 import { Clear as ClearIcon } from "@mui/icons-material";
 import React, { useState } from "react";
@@ -42,6 +43,8 @@ const EMPTY_PROFESSION: Job = {
 };
 
 const CreateJobs: React.FC = () => {
+  const isMobile = useMediaQuery("(max-width: 900px)");
+
   const [jobToAdd, setJobToAdd] = useState<Job>(EMPTY_PROFESSION);
   const [languageToAdd, setLanguageToAdd] = useState<Skill>();
   const [addedLanguages, setAddedLanguages] = useState<Skill[]>([]);
@@ -127,7 +130,7 @@ const CreateJobs: React.FC = () => {
           Criação de propostas de trabalho para quem faz parte do nosso banco de
           talentos
         </Box>
-        <SectionTitle text="Dados da vaga:" />
+        <SectionTitle text="Dados da vaga" />
         <Stack direction="row" gap="16px">
           <TextField
             fullWidth
@@ -310,8 +313,7 @@ const CreateJobs: React.FC = () => {
           }}
         />
         <br />
-        <SectionTitle text="Habilidades Obrigatória" />
-        <br />
+        <SectionTitle text="Habilidades obrigatórias" />
         <Stack direction="row" gap="16px">
           <Box flexGrow={1}>
             <Autocomplete
@@ -481,7 +483,7 @@ const CreateJobs: React.FC = () => {
           />
         </Stack>
         <br />
-        <SectionTitle text="Conhecimentos Diferenciais" />
+        <SectionTitle text="Conhecimentos diferenciais" />
         <br />
         <Stack direction="row" gap="16px">
           <Box flexGrow={1}>
@@ -654,9 +656,11 @@ const CreateJobs: React.FC = () => {
             setSkills={setAddedOtherSkills}
           />
         </Stack>
-        <Button fullWidth variant="contained">
-          Criar Vaga
-        </Button>
+        <Box display="flex" justifyContent="center">
+          <Button fullWidth={isMobile} variant="contained">
+            Criar Vaga
+          </Button>
+        </Box>
       </Stack>
       <Box
         width="100%"

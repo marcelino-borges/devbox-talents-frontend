@@ -19,6 +19,7 @@ import {
   CircularProgress,
   InputAdornment,
   IconButton,
+  useMediaQuery,
 } from "@mui/material";
 import {
   Clear as ClearIcon,
@@ -103,6 +104,8 @@ const EMPTY_PERSONAL_DATA: PersonalData = {
 };
 
 const Account: React.FC = () => {
+  const isMobile = useMediaQuery("(max-width: 900px)");
+
   const navigate = useNavigate();
   const { authId } = useParams();
   const [isEditing, setIsEditing] = useState(false);
@@ -1311,9 +1314,9 @@ const Account: React.FC = () => {
           <Link to={ROUTING_PATH.PRIVACY_POLICY}>Políticas de Privacidade</Link>{" "}
           da Devbox.
         </Box>
-        <Box mt="16px">
+        <Box mt="16px" display="flex" justifyContent="center">
           <Button
-            fullWidth
+            fullWidth={isMobile}
             variant="contained"
             onClick={() => {
               setErrorGetTalent("");
