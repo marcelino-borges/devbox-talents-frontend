@@ -1,3 +1,4 @@
+import { SeniorityLevel } from "../models/jobs";
 import { EmploymentType, LocationType, Skill } from "../models/talents";
 
 export const translateEmploymentType = (type: EmploymentType) => {
@@ -49,4 +50,27 @@ export const joinSkills = (skills: Skill[]): string => {
       );
     })
     .join("");
+};
+
+export const translateSeniorityLevel = (type: SeniorityLevel) => {
+  switch (type) {
+    case SeniorityLevel.INTERN:
+      return "Estagiário";
+    case SeniorityLevel.TREINEE:
+      return "Treinee";
+    case SeniorityLevel.JUNIOR:
+      return "Programador Junior";
+    case SeniorityLevel.MID:
+      return "Programador Pleno";
+    case SeniorityLevel.SENIOR:
+      return "Programador Senior";
+    case SeniorityLevel.LEAD:
+      return "Lead";
+    case SeniorityLevel.MANAGER:
+      return "Programador Gerente";
+    case SeniorityLevel.DIRECTOR:
+      return "Diretor";
+    case SeniorityLevel.CLEVEL:
+      return "C-level executive";
+  }
 };
