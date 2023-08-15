@@ -11,7 +11,12 @@ import {
 } from "@mui/material";
 import { Clear as ClearIcon } from "@mui/icons-material";
 import React, { useState } from "react";
-import { EmploymentType, LocationType, Skill } from "../../models/talents";
+import {
+  EmploymentType,
+  LocationType,
+  Skill,
+  Talent,
+} from "../../models/talents";
 import {
   translateEmploymentType,
   translateLocationType,
@@ -24,8 +29,13 @@ import {
   LANGUAGES,
   MAX_APP_WIDTH,
   OTHER_SKILLS,
+  TALENT_STORAGE_KEY,
 } from "../../constants";
 import Footer from "../../components/footer";
+import { createJob } from "../../services/Jobs";
+import { ROUTING_PATH } from "../../routes/routes";
+import { useNavigate } from "react-router-dom";
+import { getStorage } from "../../utils/storage";
 
 const EMPTY_PROFESSION: Job = {
   creatorId: undefined,
@@ -42,18 +52,100 @@ const EMPTY_PROFESSION: Job = {
   seniorityLevel: SeniorityLevel.INTERN,
 };
 
+interface JobsData {
+  companyName: string;
+  roleName: string;
+  companyLocation: string;
+  description: string;
+  mandatoryRequirements: string;
+  preferredRequirements: string;
+}
+
+const EMPTY_JOB_DATA: Job = {
+  creatorId: undefined,
+  companyName: "",
+  roleName: "",
+  companyLocation: "",
+  description: "",
+  mandatoryRequirements: "",
+  preferredRequirements: "",
+  employmentType: EmploymentType.APPRENTICESHIP,
+  locationType: LocationType.REMOTE,
+  mandatorySkills: [],
+  preferredSkills: [],
+  seniorityLevel: SeniorityLevel.INTERN,
+};
+
 const CreateJobs: React.FC = () => {
   const isMobile = useMediaQuery("(max-width: 900px)");
 
+  const navigate = useNavigate();
   const [jobToAdd, setJobToAdd] = useState<Job>(EMPTY_PROFESSION);
   const [languageToAdd, setLanguageToAdd] = useState<Skill>();
   const [addedLanguages, setAddedLanguages] = useState<Skill[]>([]);
+  const [submitError, setSubmitError] = useState("");
   const [frameworkToAdd, setFrameworkToAdd] = useState<Skill>();
   const [addedFrameworks, setAddedFrameworks] = useState<Skill[]>([]);
   const [addedDatabases, setAddedDatabases] = useState<Skill[]>([]);
   const [databaseToAdd, setDatabaseToAdd] = useState<Skill>();
   const [addedOtherSkills, setAddedOtherSkills] = useState<Skill[]>([]);
   const [otherSkillsToAdd, setOtherSkillsToAdd] = useState<Skill>();
+  const [addedEmploymentType, setAddedEmploymentType] =
+    useState<EmploymentType>(EmploymentType.APPRENTICESHIP);
+  const [addedLocationType, setAddedLocationType] = useState<LocationType>(
+    LocationType.REMOTE
+  );
+  const [addedSeniorityLevel, setAddedSeniorityLevel] =
+    useState<SeniorityLevel>(SeniorityLevel.INTERN);
+  const [jobsData, setJobsData] = useState<JobsData>(EMPTY_JOB_DATA);
+  const [addedMandatorySkills, setAddedMandatorySkills] = useState<Skill[]>([]);
+  const [addedPreferredSkills, setAddedPreferredSkills] = useState<Skill[]>([]);
+  const [errorCreateJob, setErrorCreateJob] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const submitJobCreation = () => {
+    setIsLoading(true);
+
+    const userData = getStorage(TALENT_STORAGE_KEY);
+    const errorUserMessage = "Não encontramos os dados do usuário logado.";
+
+    if (!userData) {
+      setErrorCreateJob(errorUserMessage);
+      return;
+    }
+
+    const parsedUser = JSON.parse(userData) as Talent;
+
+    if (!parsedUser || !parsedUser._id?.length) {
+      setErrorCreateJob(errorUserMessage);
+      return;
+    }
+
+    const newJob: Job = {
+      creatorId: parsedUser._id,
+      companyName: jobsData.companyName,
+      roleName: jobsData.roleName,
+      employmentType: addedEmploymentType,
+      companyLocation: jobsData.companyLocation,
+      locationType: addedLocationType,
+      description: jobsData.description,
+      mandatoryRequirements: jobsData.mandatoryRequirements,
+      preferredRequirements: jobsData.preferredRequirements,
+      mandatorySkills: addedMandatorySkills,
+      preferredSkills: addedPreferredSkills,
+      seniorityLevel: addedSeniorityLevel,
+    };
+
+    createJob(newJob)
+      .then(() => {
+        navigate(`${ROUTING_PATH.PROFILE}`);
+      })
+      .catch((error: any) => {
+        const message = error.response.data.message;
+        console.error(message);
+        setSubmitError("Erro ao criar sua vaga.");
+      });
+  };
 
   const SelectedSkills = ({ skills, setSkills }: any) => {
     if (!skills.length) return null;
@@ -295,24 +387,26 @@ const CreateJobs: React.FC = () => {
             setJobToAdd(requirements);
           }}
         />
-        <TextField
-          label="Requisitos Preferidos"
-          variant="outlined"
-          fullWidth
-          multiline
-          minRows={4}
-          value={jobToAdd.preferredRequirements}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-            if (!jobToAdd) return;
+        <Stack mb="30px">
+          <TextField
+            label="Requisitos Preferidos"
+            variant="outlined"
+            fullWidth
+            multiline
+            minRows={4}
+            value={jobToAdd.preferredRequirements}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              if (!jobToAdd) return;
 
-            const requirementsPreferred = {
-              ...jobToAdd,
-              preferredRequirements: event.target.value,
-            };
-            setJobToAdd(requirementsPreferred);
-          }}
-        />
-        <br />
+              const requirementsPreferred = {
+                ...jobToAdd,
+                preferredRequirements: event.target.value,
+              };
+              setJobToAdd(requirementsPreferred);
+            }}
+          />
+        </Stack>
+
         <SectionTitle text="Habilidades obrigatórias" />
         <Stack direction="row" gap="16px">
           <Box flexGrow={1}>
@@ -438,7 +532,7 @@ const CreateJobs: React.FC = () => {
             setSkills={setAddedDatabases}
           />
         </Stack>
-        <Stack direction="column" gap="16px">
+        <Stack direction="column" gap="16px" mb="30px">
           <Stack direction="row" gap="16px">
             <Box flexGrow={1}>
               <Autocomplete
@@ -482,9 +576,7 @@ const CreateJobs: React.FC = () => {
             setSkills={setAddedOtherSkills}
           />
         </Stack>
-        <br />
         <SectionTitle text="Conhecimentos diferenciais" />
-        <br />
         <Stack direction="row" gap="16px">
           <Box flexGrow={1}>
             <Autocomplete
@@ -657,7 +749,13 @@ const CreateJobs: React.FC = () => {
           />
         </Stack>
         <Box display="flex" justifyContent="center">
-          <Button fullWidth={isMobile} variant="contained">
+          <Button
+            fullWidth={isMobile}
+            variant="contained"
+            onClick={() => {
+              submitJobCreation();
+            }}
+          >
             Criar Vaga
           </Button>
         </Box>
